@@ -1,0 +1,7 @@
+{
+    "recommendations": [
+        "matklad.rust-analyzer",
+        "swellaby.vscode-rust-test-adapter",
+        "tamasfe.even-better-toml"
+    ]
+}
