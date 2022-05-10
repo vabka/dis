@@ -1,10 +1,9 @@
-use anyhow::{anyhow, bail};
-use log::{debug, error, info};
 use reqwest::{
     header::{HeaderMap, HeaderValue},
-    ClientBuilder, Method,
+    ClientBuilder
 };
 use serde::{Deserialize, Serialize};
+use serde_repr::{Serialize_repr, Deserialize_repr};
 
 use crate::snowflake::Snowflake;
 
@@ -79,19 +78,20 @@ impl DiscordBotApiClient {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ChannelType(u8);
-impl ChannelType {
-    pub const GUILD_TEXT: Self = Self(0);
-    pub const DM: Self = Self(1);
-    pub const GUILD_VOICE: Self = Self(2);
-    pub const GROUP_DM: Self = Self(3);
-    pub const GUILD_CATEGORY: Self = Self(4);
-    pub const GUILD_NEWS: Self = Self(5);
-    pub const GUILD_NEWS_THREAD: Self = Self(10);
-    pub const GUILD_PUBLIC_THREAD: Self = Self(11);
-    pub const GUILD_PRIVATE_THREAD: Self = Self(12);
-    pub const GUILD_STAGE_VOICE: Self = Self(13);
-    pub const GUILD_DIRECTORY: Self = Self(14);
-    pub const GUILD_FORUM: Self = Self(15);
+#[derive(Debug, Serialize_repr, Deserialize_repr)]
+#[non_exhaustive]
+#[repr(u8)]
+pub enum ChannelType {
+    GuildText = 0,
+    DM = 1,
+    GuildVoice = 2,
+    GroupDM = 3,
+    GuildCategory = 4,
+    GuildNews = 5,
+    GuildNewsThread = 10,
+    GuildPublicThread = 11,
+    GuildPrivateThread = 12,
+    GuildStageVoice = 13,
+    GuildDirectory = 14,
+    GuildForum = 15,
 }

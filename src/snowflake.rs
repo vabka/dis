@@ -1,7 +1,7 @@
 use std::{fmt::Display, num::ParseIntError, str::FromStr};
 
 use chrono::{DateTime, TimeZone, Utc};
-use serde::{de::Visitor, Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Deserialize)]
 pub struct Snowflake(#[serde(deserialize_with = "serde_aux::deserialize_number_from_string")] i64);

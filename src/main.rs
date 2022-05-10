@@ -1,16 +1,13 @@
 use std::env;
 
-use actix_web::{HttpServer, App};
-use discord_api_client::{
-    application_command::{ApplicationCommand, ApplicationCommandType},
-    DiscordBotApiClient,
-};
+use actix_web::{HttpServer, App, body::MessageBody};
+
 use dotenv::dotenv;
 
-use log::{info};
+
 use snowflake::Snowflake;
 
-use crate::{discord_api_client::application_command::ApplicationCommandOption, endpoints::{tos, privacy, interactions}};
+use crate::{endpoints::{tos, privacy, interactions}};
 
 pub mod discord_api_client;
 pub mod endpoints;
@@ -21,46 +18,45 @@ async fn main() -> anyhow::Result<()> {
     dotenv().ok();
     env_logger::init();
     let config = load_config();
-    let client = DiscordBotApiClient::new(
-        config.token.as_str(),
-        &config.base_url.as_str(),
-        &config.bot_url.as_str(),
-        "0.1",
-        config.app_id,
-    );
-    let options = [ApplicationCommandOption {
-        command_type: ApplicationCommandType::STRING,
-        name: "text".to_owned(),
-        name_localizations: None,
-        description: "text to echo".to_owned(),
-        description_localizations: None,
-        required: Some(true),
-        choices: None,
-        options: None,
-        channel_types: None,
-        min_value: None,
-        max_value: None,
-        autocomplete: Some(false),
-    }];
-    let v: Vec<ApplicationCommandOption> = vec![];
-    let application_command = ApplicationCommand {
-        id: Snowflake::zero(),
-        command_type: Some(ApplicationCommandType::SUB_COMMAND),
-        application_id: config.app_id,
-        guild_id: None,
-        name: "echo".to_owned(),
-        name_localizations: None,
-        description: "echo command".to_owned(),
-        description_localizations: None,
-        options: Some(Box::new(options)),
-        default_member_permissions: None,
-        dm_permission: None,
-        version: Snowflake::zero(),
-    };
-    let created_command = client
-        .create_application_command(&application_command)
-        .await?;
-    info!("Created command: {:#?}", created_command);
+    // let client = DiscordBotApiClient::new(
+    //     config.token.as_str(),
+    //     &config.base_url.as_str(),
+    //     &config.bot_url.as_str(),
+    //     "0.1",
+    //     config.app_id,
+    // );
+    // let options = vec![ApplicationCommandOption {
+    //     command_type: ApplicationCommandType::STRING,
+    //     name: "text".to_owned(),
+    //     name_localizations: None,
+    //     description: "text to echo".to_owned(),
+    //     description_localizations: None,
+    //     required: Some(true),
+    //     choices: None,
+    //     options: None,
+    //     channel_types: None,
+    //     min_value: None,
+    //     max_value: None,
+    //     autocomplete: Some(false),
+    // }];
+    // let application_command = ApplicationCommand {
+    //     id: Snowflake::zero(),
+    //     command_type: Some(ApplicationCommandType::SUB_COMMAND),
+    //     application_id: config.app_id,
+    //     guild_id: None,
+    //     name: "echo".to_owned(),
+    //     name_localizations: None,
+    //     description: "echo command".to_owned(),
+    //     description_localizations: None,
+    //     options: Some(options.into_boxed_slice()),
+    //     default_member_permissions: None,
+    //     dm_permission: None,
+    //     version: Snowflake::zero(),
+    // };
+    // let created_command = client
+    //     .create_application_command(&application_command)
+    //     .await?;
+    // info!("Created command: {:#?}", created_command);
 
     HttpServer::new(|| {
         App::new()
@@ -70,7 +66,8 @@ async fn main() -> anyhow::Result<()> {
     })
     .bind(config.socket_addr)?
     .run()
-    .await
+    .await?;
+    Ok(())
 }
 
 struct Config {
