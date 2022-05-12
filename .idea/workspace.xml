@@ -65,10 +65,10 @@
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "advanced.settings"
+    "settings.editor.selected.configurable": "language.rust.rustfmt"
   }
 }]]></component>
-  <component name="RunManager" selected="Cargo.Test discord_authorization::tests::test">
+  <component name="RunManager" selected="Cargo.Run">
     <configuration default="true" type="JetRunConfigurationType">
       <module name="disbuster" />
       <method v="2">
@@ -129,9 +129,6 @@
     <option name="toolchainHomeDirectory" value="$PROJECT_DIR$/../../.cargo/bin" />
     <option name="version" value="2" />
   </component>
-  <component name="RustfmtProjectSettings">
-    <option name="runRustfmtOnSave" value="true" />
-  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -146,7 +143,7 @@
       <workItem from="1652303902407" duration="254000" />
       <workItem from="1652304171455" duration="84000" />
       <workItem from="1652304270805" duration="3493000" />
-      <workItem from="1652309705946" duration="7998000" />
+      <workItem from="1652309705946" duration="9217000" />
     </task>
     <servers />
   </component>

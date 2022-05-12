@@ -1,13 +1,11 @@
-use crate::{HttpMessage, Service};
-use actix_web::dev::{forward_ready, Payload, ServiceRequest, ServiceResponse, Transform};
+use actix_web::dev::{forward_ready, Payload, Service, ServiceRequest, ServiceResponse, Transform};
 use actix_web::error::PayloadError;
 use actix_web::http::StatusCode;
 use actix_web::web::{Bytes, BytesMut};
-use actix_web::{Error, ResponseError};
+use actix_web::{Error, HttpMessage, ResponseError};
 use ed25519_dalek::PublicKey;
-use futures_util::future::{BoxFuture, LocalBoxFuture};
-use futures_util::{StreamExt, TryFutureExt};
-use log::{debug, info};
+use async_std::prelude::*;
+use log::{info};
 use signature::Verifier;
 use std::cell::RefCell;
 use std::fmt::{Display, Formatter};
@@ -15,7 +13,7 @@ use std::future::{ready, Ready};
 use std::pin::Pin;
 use std::rc::Rc;
 use async_std::stream;
-use async_std::stream::Stream;
+use futures_util::future::LocalBoxFuture;
 
 pub struct DiscordAuthorizationMiddleware<S> {
     service: Rc<RefCell<S>>,
