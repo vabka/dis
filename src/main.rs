@@ -6,7 +6,7 @@ use dotenv::dotenv;
 use crate::discord_authorization::DiscordAuthorization;
 use discord::snowflake::Snowflake;
 
-use crate::endpoints::{interactions, privacy, tos};
+use crate::endpoints::{privacy, tos, interactions};
 
 mod discord;
 mod discord_authorization;
