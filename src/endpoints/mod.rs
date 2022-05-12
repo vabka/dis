@@ -1,4 +1,5 @@
 use actix_web::{get, post, web::{self}, HttpResponse, Responder, HttpRequest, HttpMessage, Error};
+use actix_web::web::Json;
 
 use log::info;
 use serde::{self, Deserialize, Serialize};
@@ -16,9 +17,11 @@ pub async fn interactions(
     info!("Interaction received! {:#?}", interaction);
     return match interaction.interaction_type {
         InteractionType::Ping => Ok(web::Json(InteractionResponse::pong())),
+        InteractionType::ApplicationCommand => todo!("Handle application command"),
         _ => todo!("Not covered")
     };
 }
+
 
 #[get("/tos")]
 pub async fn tos() -> impl Responder {
