@@ -1,25 +1,26 @@
 use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
+use serde_repr::{Serialize_repr, Deserialize_repr};
 
-use crate::snowflake::Snowflake;
+use crate::discord::snowflake::Snowflake;
 
 use super::{permissions::Permissions, ChannelType};
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ApplicationCommandType(u8);
-impl ApplicationCommandType {
-    pub const SUB_COMMAND: Self = Self(1);
-    pub const SUB_COMMAND_GROUP: Self = Self(2);
-    pub const STRING: Self = Self(3);
-    pub const INTEGER: Self = Self(4);
-    pub const BOOLEAN: Self = Self(5);
-    pub const USER: Self = Self(6);
-    pub const CHANNEL: Self = Self(7);
-    pub const ROLE: Self = Self(8);
-    pub const MENTIONABLE: Self = Self(9);
-    pub const NUMBER: Self = Self(10);
-    pub const ATTACHMENT: Self = Self(11);
+#[derive(Debug, Serialize_repr, Deserialize_repr)]
+#[repr(u8)]
+pub enum ApplicationCommandType {
+    SubCommand = 1,
+    SubCommandGroup = 2,
+    String = 3,
+    Integer = 4,
+    Boolean = 5,
+    User = 6,
+    Channel = 7,
+    Role = 8,
+    Mentionable = 9,
+    Number = 10,
+    Attachment = 11,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -27,12 +28,12 @@ pub struct ApplicationCommandOptionChoice {
     pub name: String,
     pub name_localizations: Option<HashMap<Locale, String>>,
 
-    pub value: ApplicationCommandOptionChoiceValue,
+    pub value: ApplicationCommandOptionValue,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub enum ApplicationCommandOptionChoiceValue {
-    String(String),
+pub enum ApplicationCommandOptionValue {
+    Str(String),
     Integer(i64),
     Double(f64),
 }
@@ -79,7 +80,6 @@ pub struct ApplicationCommandOption {
 pub struct Locale(String);
 
 impl Locale {
-
     pub fn code(&self) -> &str {
         &self.0
     }

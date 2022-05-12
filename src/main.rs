@@ -1,21 +1,19 @@
 use std::env;
 
-use actix_web::dev::Service;
-use actix_web::web::Data;
-use actix_web::{middleware, web, App, HttpMessage, HttpServer};
+use actix_web::{App, HttpMessage, HttpServer, middleware, web};
 use dotenv::dotenv;
-use futures_util::FutureExt;
 
 use crate::discord_authorization::DiscordAuthorization;
-use reqwest::header::HeaderValue;
-use snowflake::Snowflake;
+use discord::snowflake::Snowflake;
 
 use crate::endpoints::{interactions, privacy, tos};
 
-mod discord_api_client;
+mod discord;
 mod discord_authorization;
 mod endpoints;
-mod snowflake;
+mod domain;
+// mod typed_interaction;
+
 #[actix_web::main]
 async fn main() -> anyhow::Result<()> {
     dotenv()?;
@@ -51,7 +49,7 @@ struct Config {
 
 fn load_config() -> Config {
     Config {
-        token: env::var("DISCORD_TOKEN").expect("token"),
+        token: env::var("DISCORD_TOKEN").expect("DISCORD_TOKEN"),
         socket_addr: {
             let listen_addr = env::var("LISTEN").unwrap_or_else(|_| "127.0.0.1".to_string());
             let port = env::var("PORT")
@@ -60,7 +58,7 @@ fn load_config() -> Config {
             (listen_addr, port)
         },
         intent_bits: {
-            let intent_str = env::var("PERMISSIONS_INTEGER").expect("intents number");
+            let intent_str = env::var("PERMISSIONS_INTEGER").expect("PERMISSIONS_INTEGER");
             let intent_bits: u64 = intent_str.parse::<u64>().expect("valid number");
             intent_bits
         },

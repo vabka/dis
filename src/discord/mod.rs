@@ -1,16 +1,18 @@
 use reqwest::{
-    header::{HeaderMap, HeaderValue},
-    ClientBuilder
+    ClientBuilder,
+    header::{HeaderMap, HeaderValue}
 };
 use serde::{Deserialize, Serialize};
-use serde_repr::{Serialize_repr, Deserialize_repr};
+use serde_repr::{Deserialize_repr, Serialize_repr};
 
-use crate::snowflake::Snowflake;
+use snowflake::Snowflake;
 
 use self::application_command::ApplicationCommand;
 
 pub mod application_command;
 pub mod permissions;
+pub mod interactions;
+pub mod snowflake;
 
 pub struct DiscordBotApiClient {
     token: String,

@@ -1,8 +1,8 @@
 use actix_web::dev::{forward_ready, Payload, Service, ServiceRequest, ServiceResponse, Transform};
 use actix_web::error::PayloadError;
-use actix_web::http::StatusCode;
+use actix_web::http::{header, StatusCode};
 use actix_web::web::{Bytes, BytesMut};
-use actix_web::{Error, HttpMessage, ResponseError};
+use actix_web::{Error, HttpMessage, HttpResponse, ResponseError};
 use ed25519_dalek::PublicKey;
 use async_std::prelude::*;
 use log::{info};
@@ -12,6 +12,8 @@ use std::fmt::{Display, Formatter};
 use std::future::{ready, Ready};
 use std::pin::Pin;
 use std::rc::Rc;
+use actix_web::body::BoxBody;
+use actix_web::http::header::HeaderValue;
 use async_std::stream;
 use futures_util::future::LocalBoxFuture;
 
@@ -38,6 +40,12 @@ impl ResponseError for ServiceError {
         match self {
             ServiceError::Unauthorized => StatusCode::UNAUTHORIZED,
         }
+    }
+
+    fn error_response(&self) -> HttpResponse<BoxBody> {
+        let mut res = HttpResponse::new(self.status_code());
+        res.headers_mut().insert(header::CONTENT_TYPE, HeaderValue::from_str("application/json").unwrap());
+        res.set_body(BoxBody::new("{}"))
     }
 }
 
