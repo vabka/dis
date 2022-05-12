@@ -72,7 +72,7 @@ impl<S, B> Service<ServiceRequest> for DiscordAuthorizationMiddleware<S>
         {
             let public_key = self.public_key;
             let svc = self.service.clone();
-            return Box::pin(async move {
+            Box::pin(async move {
                 let mut request_body = BytesMut::new();
                 let timestamp_bytes = timestamp.as_bytes();
                 request_body.extend_from_slice(timestamp_bytes);
@@ -98,7 +98,7 @@ impl<S, B> Service<ServiceRequest> for DiscordAuthorizationMiddleware<S>
                     info!("Request unauthorized");
                     Err(ServiceError::Unauthorized.into())
                 }
-            });
+            })
         } else {
             Box::pin(ready(Err(ServiceError::Unauthorized.into())))
         }

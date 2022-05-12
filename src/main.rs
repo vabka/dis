@@ -1,6 +1,9 @@
+#![allow(dead_code)]
+#![warn(unused_imports)]
+
 use std::env;
 
-use actix_web::{App, HttpMessage, HttpServer, middleware, web};
+use actix_web::{App, HttpServer, middleware, web};
 use dotenv::dotenv;
 
 use crate::discord_authorization::DiscordAuthorization;

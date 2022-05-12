@@ -2,7 +2,7 @@ use reqwest::{
     ClientBuilder,
     header::{HeaderMap, HeaderValue}
 };
-use serde::{Deserialize, Serialize};
+
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
 use snowflake::Snowflake;
