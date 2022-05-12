@@ -1,63 +1,131 @@
-use std::future::{Ready, ready};
-use actix_web::dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform};
-use actix_web::body::MessageBody;
-use log::info;
+use crate::{HttpMessage, Service};
+use actix_web::dev::{forward_ready, Payload, ServiceRequest, ServiceResponse, Transform};
+use actix_web::error::PayloadError;
+use actix_web::http::StatusCode;
+use actix_web::web::{Bytes, BytesMut};
+use actix_web::{Error, ResponseError};
+use ed25519_dalek::PublicKey;
+use futures_util::future::{BoxFuture, LocalBoxFuture};
+use futures_util::{StreamExt, TryFutureExt};
+use log::{debug, info};
+use signature::Verifier;
+use std::cell::RefCell;
+use std::fmt::{Display, Formatter};
+use std::future::{ready, Ready};
+use std::pin::Pin;
+use std::rc::Rc;
+use async_std::stream;
+use async_std::stream::Stream;
 
 pub struct DiscordAuthorizationMiddleware<S> {
-    service: S,
-    public_key: ed25519_dalek::PublicKey,
+    service: Rc<RefCell<S>>,
+    public_key: PublicKey,
 }
 
-impl<S: Service<ServiceRequest, Response=ServiceResponse<B>>, B: MessageBody> Service<ServiceRequest> for DiscordAuthorizationMiddleware<S> {
-    type Response = S::Response;
-    type Error = S::Error;
-    type Future = S::Future;
+#[derive(Debug)]
+pub enum ServiceError {
+    Unauthorized,
+}
+
+impl Display for ServiceError {
+    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
+        match self {
+            ServiceError::Unauthorized => f.write_str("Unauthorized"),
+        }
+    }
+}
+
+impl ResponseError for ServiceError {
+    fn status_code(&self) -> StatusCode {
+        match self {
+            ServiceError::Unauthorized => StatusCode::UNAUTHORIZED,
+        }
+    }
+}
+
+impl<S, B> Service<ServiceRequest> for DiscordAuthorizationMiddleware<S>
+    where
+        S: Service<ServiceRequest, Response=ServiceResponse<B>, Error=Error> + 'static,
+        S::Future: 'static,
+        B: 'static,
+{
+    type Response = ServiceResponse<B>;
+    type Error = Error;
+    type Future = LocalBoxFuture<'static, Result<Self::Response, Self::Error>>;
 
     forward_ready!(service);
 
-    fn call(&self, req: ServiceRequest) -> Self::Future {
-        info!("Hit!");
-        self.service.call(req)
+    fn call(&self, mut req: ServiceRequest) -> Self::Future {
+        let headers = req.headers();
+        if let Some((signature, timestamp)) = headers
+            .get("X-Signature-Ed25519")
+            .and_then(|x| x.to_str().ok())
+            .and_then(|x| hex::decode(x).ok())
+            .and_then(|x| ed25519_dalek::Signature::from_bytes(x.as_slice()).ok())
+            .zip(headers.get("X-Signature-Timestamp").map(|x| x.to_owned()))
+        {
+            let public_key = self.public_key;
+            let svc = self.service.clone();
+            return Box::pin(async move {
+                let mut request_body = BytesMut::new();
+                let timestamp_bytes = timestamp.as_bytes();
+                request_body.extend_from_slice(timestamp_bytes);
+                let timestamp_offset = timestamp_bytes.len();
+                // READ PAYLOAD
+                while let Some(chunk) = req.take_payload().next().await {
+                    request_body.extend_from_slice(&chunk?);
+                }
+                let body = request_body.freeze();
+                if public_key.verify(&body, &signature).is_ok() {
+                    info!("request authorized");
+
+                    // RESTORE PAYLOAD
+                    let orig_payload = body.slice(timestamp_offset..);
+                    let single_part: Result<Bytes, PayloadError> = Ok(orig_payload);
+                    let in_memory_stream = stream::once(single_part);
+                    let pinned_stream: Pin<Box<dyn Stream<Item=Result<Bytes, PayloadError>>>> = Box::pin(in_memory_stream);
+                    let in_memory_payload: Payload = pinned_stream.into();
+                    req.set_payload(in_memory_payload);
+
+                    Ok(svc.call(req).await?)
+                } else {
+                    info!("Request unauthorized");
+                    Err(ServiceError::Unauthorized.into())
+                }
+            });
+        } else {
+            Box::pin(ready(Err(ServiceError::Unauthorized.into())))
+        }
     }
 }
 
 #[derive(Copy, Clone)]
 pub struct DiscordAuthorization {
-    pub public_key: ed25519_dalek::PublicKey,
+    public_key: PublicKey,
 }
 
-impl<S: Service<ServiceRequest, Response=ServiceResponse<B>>, B: MessageBody> Transform<S, ServiceRequest> for DiscordAuthorization {
-    type Response = S::Response;
-    type Error = S::Error;
+impl DiscordAuthorization {
+    pub fn new(public_key: PublicKey) -> Self {
+        DiscordAuthorization { public_key }
+    }
+}
+
+impl<S, B> Transform<S, ServiceRequest> for DiscordAuthorization
+    where
+        S: Service<ServiceRequest, Response=ServiceResponse<B>, Error=Error> + 'static,
+        S::Future: 'static,
+        B: 'static,
+{
+    type Response = ServiceResponse<B>;
+    type Error = Error;
     type Transform = DiscordAuthorizationMiddleware<S>;
     type InitError = ();
     type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
     fn new_transform(&self, service: S) -> Self::Future {
         ready(Ok(DiscordAuthorizationMiddleware {
-            service,
+            service: Rc::new(RefCell::new(service)),
             public_key: self.public_key,
         }))
     }
 }
-
-//     if let Some((signature, timestamp)) = headers.get("X-Signature-Ed25519")
-//         .and_then(|x| x.to_str().ok())
-//         .and_then(|x| hex::decode(x).ok())
-//         .and_then(|x| ed25519_dalek::Signature::from_bytes(x.as_slice()).ok())
-//         .zip(headers.get("X-Signature-Timestamp")) {
-//         info!("Timestamp: {:#?}", timestamp.to_str());
-//         info!("Signature: {:#?}", signature.to_string());
-//         let body_bytes = {
-//             let mut bytes = web::BytesMut::new();
-//             bytes.extend_from_slice(timestamp.as_bytes());
-//             while let Some(item) = payload.next().await {
-//                 bytes.extend_from_slice(&item?);
-//             }
-//             bytes
-//         };
-//         info!("Bytes count: {}", body_bytes.len());
-//         info!("Concatenated body: {:#?}", String::from_utf8(body_bytes.to_vec()));
-//         let verification = public_key.verify(&body_bytes, &signature);
-//         info!("Signature validated {:#?}", verification);
-//     }

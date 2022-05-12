@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Deserialize)]
 pub struct Snowflake(#[serde(deserialize_with = "serde_aux::deserialize_number_from_string")] i64);
-const DISCORD_EPOCH: i64 = 1420070400000;
+pub const DISCORD_EPOCH: i64 = 1420070400000;
 
 impl Display for Snowflake {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

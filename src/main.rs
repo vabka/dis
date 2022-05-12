@@ -1,68 +1,37 @@
 use std::env;
 
-use actix_web::{HttpServer, App, body::MessageBody};
-
+use actix_web::dev::Service;
+use actix_web::web::Data;
+use actix_web::{middleware, web, App, HttpMessage, HttpServer};
 use dotenv::dotenv;
+use futures_util::FutureExt;
 
-
+use crate::discord_authorization::DiscordAuthorization;
+use reqwest::header::HeaderValue;
 use snowflake::Snowflake;
 
-use crate::{endpoints::{tos, privacy, interactions}};
+use crate::endpoints::{interactions, privacy, tos};
 
-pub mod discord_api_client;
-pub mod endpoints;
-pub mod snowflake;
-
+mod discord_api_client;
+mod discord_authorization;
+mod endpoints;
+mod snowflake;
 #[actix_web::main]
 async fn main() -> anyhow::Result<()> {
-    dotenv().ok();
+    dotenv()?;
     env_logger::init();
     let config = load_config();
-    // let client = DiscordBotApiClient::new(
-    //     config.token.as_str(),
-    //     &config.base_url.as_str(),
-    //     &config.bot_url.as_str(),
-    //     "0.1",
-    //     config.app_id,
-    // );
-    // let options = vec![ApplicationCommandOption {
-    //     command_type: ApplicationCommandType::STRING,
-    //     name: "text".to_owned(),
-    //     name_localizations: None,
-    //     description: "text to echo".to_owned(),
-    //     description_localizations: None,
-    //     required: Some(true),
-    //     choices: None,
-    //     options: None,
-    //     channel_types: None,
-    //     min_value: None,
-    //     max_value: None,
-    //     autocomplete: Some(false),
-    // }];
-    // let application_command = ApplicationCommand {
-    //     id: Snowflake::zero(),
-    //     command_type: Some(ApplicationCommandType::SUB_COMMAND),
-    //     application_id: config.app_id,
-    //     guild_id: None,
-    //     name: "echo".to_owned(),
-    //     name_localizations: None,
-    //     description: "echo command".to_owned(),
-    //     description_localizations: None,
-    //     options: Some(options.into_boxed_slice()),
-    //     default_member_permissions: None,
-    //     dm_permission: None,
-    //     version: Snowflake::zero(),
-    // };
-    // let created_command = client
-    //     .create_application_command(&application_command)
-    //     .await?;
-    // info!("Created command: {:#?}", created_command);
-
-    HttpServer::new(|| {
+    let public_key = config.public_key;
+    HttpServer::new(move || {
         App::new()
-            .service(tos)
+            .wrap(middleware::Compress::default())
             .service(privacy)
-            .service(interactions)
+            .service(tos)
+            .service(
+                web::scope("/api")
+                    .wrap(DiscordAuthorization::new(public_key))
+                    .service(interactions),
+            )
     })
     .bind(config.socket_addr)?
     .run()
@@ -77,13 +46,14 @@ struct Config {
     pub app_id: Snowflake,
     pub bot_url: String,
     pub base_url: String,
+    pub public_key: ed25519_dalek::PublicKey,
 }
 
 fn load_config() -> Config {
     Config {
         token: env::var("DISCORD_TOKEN").expect("token"),
         socket_addr: {
-            let listen_addr = env::var("LISTEN").unwrap_or("127.0.0.1".to_string());
+            let listen_addr = env::var("LISTEN").unwrap_or_else(|_| "127.0.0.1".to_string());
             let port = env::var("PORT")
                 .map(|str| str.parse::<u16>().expect("valid port"))
                 .unwrap_or(8080);
@@ -94,8 +64,18 @@ fn load_config() -> Config {
             let intent_bits: u64 = intent_str.parse::<u64>().expect("valid number");
             intent_bits
         },
-        base_url: env::var("BASE_URL").unwrap_or("https://discord.com/api".to_owned()),
+        base_url: env::var("BASE_URL").unwrap_or_else(|_| "https://discord.com/api".to_owned()),
         app_id: env::var("CLID").expect("CLID").parse().expect("Valid CLID"),
-        bot_url: env::var("URL").unwrap_or("TODO".to_owned()),
+        bot_url: env::var("URL").unwrap_or_else(|_| "TODO".to_owned()),
+        public_key: env::var("PUBLIC_KEY")
+            .map_err(|err| anyhow::anyhow!(err))
+            .and_then(parse_hex)
+            .expect("Valid public PUBLIC_KEY"),
     }
+}
+
+fn parse_hex(text: String) -> anyhow::Result<ed25519_dalek::PublicKey> {
+    let byte_vec = hex::decode(text)?;
+    let public_key = ed25519_dalek::PublicKey::from_bytes(&byte_vec)?;
+    Ok(public_key)
 }
