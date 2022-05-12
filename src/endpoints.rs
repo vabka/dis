@@ -99,7 +99,7 @@ pub struct InteractionData {
     #[serde(rename = "type")]
     pub command_type: ApplicationCommandType,
     pub resolved: Option<ResolvedData>,
-    pub options: Option<ApplicationCommandInteractionDataOption>,
+    pub options: Option<Box<[ApplicationCommandInteractionDataOption]>>,
     pub guild_id: Option<Snowflake>,
     pub custom_id: Option<String>,
     pub values: Option<Box<[SelectOptionValue]>>,

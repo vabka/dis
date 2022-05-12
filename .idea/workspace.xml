@@ -143,7 +143,7 @@
       <workItem from="1652303902407" duration="254000" />
       <workItem from="1652304171455" duration="84000" />
       <workItem from="1652304270805" duration="3493000" />
-      <workItem from="1652309705946" duration="9217000" />
+      <workItem from="1652309705946" duration="10630000" />
     </task>
     <servers />
   </component>
@@ -155,7 +155,19 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="HEAD" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
           </value>
         </entry>
       </map>
