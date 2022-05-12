@@ -32,6 +32,7 @@ pub struct ApplicationCommandOptionChoice {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(untagged)]
 pub enum ApplicationCommandOptionValue {
     Str(String),
     Integer(i64),

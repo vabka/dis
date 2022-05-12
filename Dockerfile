@@ -1,0 +1,21 @@
+FROM rust:1.60 as build
+WORKDIR /app
+COPY . /app
+RUN cargo build --release
+
+FROM gcr.io/distroless/cc
+COPY --from=build /app/target/release/disbuster /
+ARG DISCORD_TOKEN
+ARG CLIENT_ID
+ARG PUBLIC_KEY
+ARG LOG_LEVEL=INFO
+
+
+ENV DISCORD_TOKEN=$DISCORD_TOKEN
+ENV CLID=$CLIENT_ID
+ENV PUBLIC_KEY=$PUBLIC_KEY
+ENV PERMISSIONS_INTEGER=0
+ENV RUST_LOG=$LOG_LEVEL
+ENV PORT=80
+EXPOSE 80/tcp
+ENTRYPOINT ["disbuster"]

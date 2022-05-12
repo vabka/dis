@@ -12,6 +12,7 @@ pub struct InteractionCallback {
 }
 
 #[derive(Serialize)]
+#[serde(untagged)]
 pub enum InteractionCallbackData {
     Message(InteractionCallbackMessage)
 }
@@ -44,7 +45,7 @@ impl InteractionCallback {
     pub fn channel_message_with_source(message: InteractionCallbackMessage) -> Self {
         InteractionCallback {
             interaction_response_type: InteractionResponseType::ChannelMessageWithSource,
-            data: None,
+            data: Some(InteractionCallbackData::Message(message)),
         }
     }
 }

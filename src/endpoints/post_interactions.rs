@@ -6,7 +6,6 @@ use actix_web::http::{header, StatusCode};
 use actix_web::web::Json;
 use actix_web::post;
 use log::info;
-use crate::discord::application_command::ApplicationCommandOptionValue;
 use crate::discord::application_command::ApplicationCommandOptionValue::Str;
 use crate::discord::interactions::{Interaction, InteractionCallback, InteractionCallbackMessage, InteractionType};
 
