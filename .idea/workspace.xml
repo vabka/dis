@@ -12,7 +12,7 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="552f035a-7359-4b84-b25c-20b57e500a74" name="Changes" comment="Refactoring in command dispatch">
+    <list default="true" id="552f035a-7359-4b84-b25c-20b57e500a74" name="Changes" comment="fix">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/endpoints/post_interactions.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/post_interactions.rs" afterDir="false" />
     </list>
@@ -196,7 +196,8 @@
       <workItem from="1652558487635" duration="175000" />
       <workItem from="1652558682106" duration="288000" />
       <workItem from="1652559386479" duration="4126000" />
-      <workItem from="1652563563930" duration="777000" />
+      <workItem from="1652563563930" duration="896000" />
+      <workItem from="1652564666573" duration="43000" />
     </task>
     <task id="LOCAL-00001" summary="Refactoring in command dispatch">
       <created>1652563357302</created>
@@ -205,7 +206,14 @@
       <option name="project" value="LOCAL" />
       <updated>1652563357302</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="fix">
+      <created>1652564544805</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1652564544805</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -247,7 +255,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Refactoring in command dispatch" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactoring in command dispatch" />
+    <MESSAGE value="fix" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

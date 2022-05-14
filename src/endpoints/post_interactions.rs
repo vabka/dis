@@ -8,9 +8,9 @@ use actix_web::body::BoxBody;
 use actix_web::http::StatusCode;
 use actix_web::post;
 use actix_web::web::Json;
-use actix_web::{web, HttpResponse, ResponseError};
+use actix_web::{HttpResponse, ResponseError};
 use log::info;
-use std::fmt::{Display, Formatter};
+
 
 #[post("/interactions")]
 pub async fn interactions(
