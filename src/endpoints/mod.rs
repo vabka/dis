@@ -1,7 +1,7 @@
-use actix_web::HttpResponse;
-use actix_web::get;
-use actix_web::Responder;
 pub use self::post_interactions::interactions;
+use actix_web::get;
+use actix_web::HttpResponse;
+use actix_web::Responder;
 
 mod post_interactions;
 

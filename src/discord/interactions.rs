@@ -1,4 +1,6 @@
-use crate::discord::application_command::{ApplicationCommandOptionValue, ApplicationCommandType, Locale};
+use crate::discord::application_command::{
+    ApplicationCommandOptionValue, ApplicationCommandType, Locale,
+};
 use crate::Snowflake;
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
@@ -14,7 +16,7 @@ pub struct InteractionCallback {
 #[derive(Serialize)]
 #[serde(untagged)]
 pub enum InteractionCallbackData {
-    Message(InteractionCallbackMessage)
+    Message(InteractionCallbackMessage),
 }
 
 #[derive(Serialize)]
@@ -119,9 +121,9 @@ pub struct SelectOptionValue {}
 #[derive(Deserialize, Debug)]
 pub struct ApplicationCommandInteractionDataOption {
     pub name: String,
-    #[serde(rename="type")]
+    #[serde(rename = "type")]
     pub application_command_option_type: ApplicationCommandType,
-    pub value: ApplicationCommandOptionValue
+    pub value: ApplicationCommandOptionValue,
 }
 
 #[derive(Deserialize, Debug)]

@@ -1,6 +1,6 @@
 use reqwest::{
+    header::{HeaderMap, HeaderValue},
     ClientBuilder,
-    header::{HeaderMap, HeaderValue}
 };
 
 use serde_repr::{Deserialize_repr, Serialize_repr};
@@ -10,8 +10,8 @@ use snowflake::Snowflake;
 use self::application_command::ApplicationCommand;
 
 pub mod application_command;
-pub mod permissions;
 pub mod interactions;
+pub mod permissions;
 pub mod snowflake;
 
 pub struct DiscordBotApiClient {
@@ -38,7 +38,7 @@ impl DiscordBotApiClient {
                     let mut map = HeaderMap::new();
 
                     let authorization_header_value = {
-                        let mut tmp = HeaderValue::from_str(format!("Bot {token}").as_str())
+                        let mut tmp = HeaderValue::from_str(format!("Bot {}", token).as_str())
                             .expect("authorization header value");
                         tmp.set_sensitive(true);
                         tmp
@@ -47,7 +47,7 @@ impl DiscordBotApiClient {
 
                     let user_agent_header_value = {
                         HeaderValue::from_str(
-                            format!("DiscordBot ({bot_url}, {bot_version})").as_str(),
+                            format!("DiscordBot ({}, {})", bot_url, bot_version).as_str(),
                         )
                         .expect("user agent header value")
                     };
@@ -68,7 +68,7 @@ impl DiscordBotApiClient {
     ) -> anyhow::Result<ApplicationCommand> {
         let base_url = &self.base_url;
         let app_id = self.app_id;
-        let url = format!("{base_url}/v8/applications/{app_id}/commands");
+        let url = format!("{}/v8/applications/{}/commands", base_url, app_id);
         Ok(self
             .client
             .post(url)

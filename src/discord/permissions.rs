@@ -3,11 +3,17 @@ use serde::{Deserialize, Serialize};
 type Inner = i64;
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Permissions(#[serde(deserialize_with = "serde_aux::deserialize_number_from_string")] Inner);
+pub struct Permissions(
+    #[serde(deserialize_with = "serde_aux::deserialize_number_from_string")] Inner,
+);
 
 impl Permissions {
-    pub fn number_string(&self) -> String { self.0.to_string() }
-    pub fn number(&self) -> Inner { self.0 }
+    pub fn number_string(&self) -> String {
+        self.0.to_string()
+    }
+    pub fn number(&self) -> Inner {
+        self.0
+    }
 }
 
 pub struct PermissionsBuilder(Inner);

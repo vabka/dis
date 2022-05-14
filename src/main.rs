@@ -2,19 +2,21 @@
 #![warn(unused_imports)]
 
 use std::env;
+use std::rc::Rc;
+use std::sync::{Arc, RwLock};
 
-use actix_web::{App, HttpServer, middleware, web};
+use actix_web::{middleware, web, App, HttpServer};
 use dotenv::dotenv;
 
 use crate::discord_authorization::DiscordAuthorization;
 use discord::snowflake::Snowflake;
 
-use crate::endpoints::{privacy, tos, interactions};
+use crate::endpoints::{interactions, privacy, tos};
 
 mod discord;
 mod discord_authorization;
-mod endpoints;
 mod domain;
+mod endpoints;
 // mod typed_interaction;
 
 #[actix_web::main]
@@ -23,8 +25,14 @@ async fn main() -> anyhow::Result<()> {
     env_logger::init();
     let config = load_config();
     let public_key = config.public_key;
+    // let db_cfg = kv::Config::new(config.storage_path);
+    // let store = kv::Store::new(db_cfg)?;
+    // let store_box = RwLock::new(Box::new(store));
+
+    // let bucket = store.bucket::<String, String>(Some("notes"))?;
     HttpServer::new(move || {
         App::new()
+            // .app_data(web::Data::new(store_box))
             .wrap(middleware::Compress::default())
             .service(privacy)
             .service(tos)
@@ -48,6 +56,7 @@ struct Config {
     pub bot_url: String,
     pub base_url: String,
     pub public_key: ed25519_dalek::PublicKey,
+    pub storage_path: String,
 }
 
 fn load_config() -> Config {
@@ -72,6 +81,7 @@ fn load_config() -> Config {
             .map_err(|err| anyhow::anyhow!(err))
             .and_then(parse_hex)
             .expect("Valid public PUBLIC_KEY"),
+        storage_path: env::var("STORAGE_PATH").expect("Path to file db"),
     }
 }
 

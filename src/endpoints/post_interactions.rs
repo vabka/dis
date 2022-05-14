@@ -1,64 +1,104 @@
-use std::fmt::{Display, Formatter};
-use actix_web::{HttpResponse, Responder, ResponseError};
-use actix_web::body::BoxBody;
-use actix_web::http::header::HeaderValue;
-use actix_web::http::{header, StatusCode};
-use actix_web::web::Json;
-use actix_web::post;
-use log::info;
 use crate::discord::application_command::ApplicationCommandOptionValue::Str;
-use crate::discord::interactions::{Interaction, InteractionCallback, InteractionCallbackMessage, InteractionType};
+use crate::discord::application_command::ApplicationCommandType;
+use crate::discord::interactions::{
+    ApplicationCommandInteractionDataOption, Interaction, InteractionCallback,
+    InteractionCallbackMessage, InteractionData, InteractionType,
+};
+use actix_web::body::BoxBody;
+use actix_web::http::StatusCode;
+use actix_web::post;
+use actix_web::web::Json;
+use actix_web::{web, HttpResponse, ResponseError};
+use log::info;
+use std::fmt::{Display, Formatter};
 
 #[post("/interactions")]
 pub async fn interactions(
     interaction: Json<Interaction>,
-) -> actix_web::Result<impl Responder> {
+) -> Result<Json<InteractionCallback>, InteractionError> {
     info!("Interaction received! {:#?}", interaction);
     return match interaction.interaction_type {
         InteractionType::Ping => Ok(Json(InteractionCallback::pong())),
-        InteractionType::ApplicationCommand => {
-            (&interaction.data)
-                .as_ref()
-                .filter(|d| d.name == "echo")
-                .and_then(|p| {
-                    if let Some(s) = &p.options {
-                        if let Str(s) = &s[0].value {
-                            return Some(InteractionCallback::channel_message_with_source(InteractionCallbackMessage {
-                                content: Some(s.to_owned())
-                            }));
-                        }
-                    }
-                    return None;
-                })
-                .map(|c| Json(c))
-                .ok_or_else(|| InteractionError::Unknown.into())
-        }
-        _ => todo!("Not covered")
+        InteractionType::ApplicationCommand => (&interaction.data)
+            .as_ref()
+            .ok_or(InteractionError::Unexpected)
+            .and_then(dispatch)
+            .map(Json),
+        _ => Err(InteractionError::Unexpected),
     };
 }
 
-#[derive(Debug)]
-enum InteractionError {
-    Unknown
+fn dispatch(data: &InteractionData) -> Result<InteractionCallback, InteractionError> {
+    match data.name.as_str() {
+        "echo" => data
+            .options
+            .as_ref()
+            .and_then(|x| match x.as_ref() {
+                [ApplicationCommandInteractionDataOption {
+                    name: n,
+                    application_command_option_type: ApplicationCommandType::String,
+                    value: Str(s),
+                }] if n == "text" => {
+                    let msg = InteractionCallbackMessage {
+                        content: Some(s.to_owned()),
+                    };
+                    Some(InteractionCallback::channel_message_with_source(msg))
+                }
+                _ => None,
+            })
+            .ok_or(InteractionError::InvalidCommand),
+        "set" => Err(InteractionError::CommandNotImplemented),
+        "get" => Err(InteractionError::CommandNotImplemented),
+        _ => Err(InteractionError::UnknownCommand),
+    }
 }
 
-impl Display for InteractionError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(format_args!("{:?}", self))
-    }
+#[derive(Debug, err_derive::Error)]
+pub enum InteractionError {
+    #[error(display = "Unexpected error occurred")]
+    Unexpected,
+    #[error(display = "Command not implemented")]
+    CommandNotImplemented,
+    #[error(display = "Unexpected error occurred")]
+    UnknownCommand,
+    #[error(display = "Unexpected error occurred")]
+    InvalidCommand,
 }
 
 impl ResponseError for InteractionError {
     fn status_code(&self) -> StatusCode {
         match self {
-            InteractionError::Unknown => StatusCode::INTERNAL_SERVER_ERROR,
+            InteractionError::Unexpected => StatusCode::INTERNAL_SERVER_ERROR,
+            InteractionError::CommandNotImplemented => StatusCode::OK,
+            InteractionError::UnknownCommand => StatusCode::OK,
+            InteractionError::InvalidCommand => StatusCode::OK,
         }
     }
 
     fn error_response(&self) -> HttpResponse<BoxBody> {
-        let mut res = HttpResponse::new(self.status_code());
-        res.headers_mut().insert(header::CONTENT_TYPE, HeaderValue::from_str("application/json").unwrap());
-        res.set_body(BoxBody::new("{}"))
+        HttpResponse::build(self.status_code())
+            .content_type(mime::APPLICATION_JSON)
+            .json(match self {
+                InteractionError::Unexpected => {
+                    InteractionCallback::channel_message_with_source(InteractionCallbackMessage {
+                        content: Some(String::from("Unexpected error occurred. Try again later")),
+                    })
+                }
+                InteractionError::CommandNotImplemented => {
+                    InteractionCallback::channel_message_with_source(InteractionCallbackMessage {
+                        content: Some(String::from("This command is not implemented")),
+                    })
+                }
+                InteractionError::UnknownCommand => {
+                    InteractionCallback::channel_message_with_source(InteractionCallbackMessage {
+                        content: Some(String::from("This command is unknown")),
+                    })
+                }
+                InteractionError::InvalidCommand => {
+                    InteractionCallback::channel_message_with_source(InteractionCallbackMessage {
+                        content: Some(String::from("This command is invalid")),
+                    })
+                }
+            })
     }
 }
-

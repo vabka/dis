@@ -1,21 +1,21 @@
+use actix_web::body::BoxBody;
 use actix_web::dev::{forward_ready, Payload, Service, ServiceRequest, ServiceResponse, Transform};
 use actix_web::error::PayloadError;
+use actix_web::http::header::HeaderValue;
 use actix_web::http::{header, StatusCode};
 use actix_web::web::{Bytes, BytesMut};
 use actix_web::{Error, HttpMessage, HttpResponse, ResponseError};
-use ed25519_dalek::PublicKey;
 use async_std::prelude::*;
-use log::{info};
+use async_std::stream;
+use ed25519_dalek::PublicKey;
+use futures_util::future::LocalBoxFuture;
+use log::info;
 use signature::Verifier;
 use std::cell::RefCell;
 use std::fmt::{Display, Formatter};
 use std::future::{ready, Ready};
 use std::pin::Pin;
 use std::rc::Rc;
-use actix_web::body::BoxBody;
-use actix_web::http::header::HeaderValue;
-use async_std::stream;
-use futures_util::future::LocalBoxFuture;
 
 pub struct DiscordAuthorizationMiddleware<S> {
     service: Rc<RefCell<S>>,
@@ -44,16 +44,19 @@ impl ResponseError for ServiceError {
 
     fn error_response(&self) -> HttpResponse<BoxBody> {
         let mut res = HttpResponse::new(self.status_code());
-        res.headers_mut().insert(header::CONTENT_TYPE, HeaderValue::from_str("application/json").unwrap());
+        res.headers_mut().insert(
+            header::CONTENT_TYPE,
+            HeaderValue::from_str("application/json").unwrap(),
+        );
         res.set_body(BoxBody::new("{}"))
     }
 }
 
 impl<S, B> Service<ServiceRequest> for DiscordAuthorizationMiddleware<S>
-    where
-        S: Service<ServiceRequest, Response=ServiceResponse<B>, Error=Error> + 'static,
-        S::Future: 'static,
-        B: 'static,
+where
+    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
+    S::Future: 'static,
+    B: 'static,
 {
     type Response = ServiceResponse<B>;
     type Error = Error;
@@ -89,7 +92,8 @@ impl<S, B> Service<ServiceRequest> for DiscordAuthorizationMiddleware<S>
                     let orig_payload = body.slice(timestamp_offset..);
                     let single_part: Result<Bytes, PayloadError> = Ok(orig_payload);
                     let in_memory_stream = stream::once(single_part);
-                    let pinned_stream: Pin<Box<dyn Stream<Item=Result<Bytes, PayloadError>>>> = Box::pin(in_memory_stream);
+                    let pinned_stream: Pin<Box<dyn Stream<Item = Result<Bytes, PayloadError>>>> =
+                        Box::pin(in_memory_stream);
                     let in_memory_payload: Payload = pinned_stream.into();
                     req.set_payload(in_memory_payload);
 
@@ -117,10 +121,10 @@ impl DiscordAuthorization {
 }
 
 impl<S, B> Transform<S, ServiceRequest> for DiscordAuthorization
-    where
-        S: Service<ServiceRequest, Response=ServiceResponse<B>, Error=Error> + 'static,
-        S::Future: 'static,
-        B: 'static,
+where
+    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
+    S::Future: 'static,
+    B: 'static,
 {
     type Response = ServiceResponse<B>;
     type Error = Error;

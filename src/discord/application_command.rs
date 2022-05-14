@@ -1,13 +1,13 @@
 use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
-use serde_repr::{Serialize_repr, Deserialize_repr};
+use serde_repr::{Deserialize_repr, Serialize_repr};
 
 use crate::discord::snowflake::Snowflake;
 
 use super::{permissions::Permissions, ChannelType};
 
-#[derive(Debug, Serialize_repr, Deserialize_repr)]
+#[derive(Debug, Serialize_repr, Deserialize_repr, Eq, PartialEq)]
 #[repr(u8)]
 pub enum ApplicationCommandType {
     SubCommand = 1,
