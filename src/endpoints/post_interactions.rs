@@ -59,9 +59,9 @@ pub enum InteractionError {
     Unexpected,
     #[error(display = "Command not implemented")]
     CommandNotImplemented,
-    #[error(display = "Unexpected error occurred")]
+    #[error(display = "Unknown command")]
     UnknownCommand,
-    #[error(display = "Unexpected error occurred")]
+    #[error(display = "Invalid command parameters")]
     InvalidCommand,
 }
 
