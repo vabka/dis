@@ -12,9 +12,12 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="552f035a-7359-4b84-b25c-20b57e500a74" name="Changes" comment="cleanup">
+    <list default="true" id="552f035a-7359-4b84-b25c-20b57e500a74" name="Changes" comment="Naive storage implementation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/domain/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/domain/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/endpoints/post_interactions.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/post_interactions.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -197,7 +200,7 @@
       <workItem from="1652558682106" duration="288000" />
       <workItem from="1652559386479" duration="4126000" />
       <workItem from="1652563563930" duration="896000" />
-      <workItem from="1652564666573" duration="5714000" />
+      <workItem from="1652564666573" duration="9364000" />
     </task>
     <task id="LOCAL-00001" summary="Refactoring in command dispatch">
       <created>1652563357302</created>
@@ -220,7 +223,14 @@
       <option name="project" value="LOCAL" />
       <updated>1652565035125</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Naive storage implementation">
+      <created>1652573335771</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1652573335771</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -264,7 +274,8 @@
     <MESSAGE value="Refactoring in command dispatch" />
     <MESSAGE value="fix" />
     <MESSAGE value="cleanup" />
-    <option name="LAST_COMMIT_MESSAGE" value="cleanup" />
+    <MESSAGE value="Naive storage implementation" />
+    <option name="LAST_COMMIT_MESSAGE" value="Naive storage implementation" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

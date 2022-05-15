@@ -1,15 +1,22 @@
 use kv::Bucket;
 
-pub struct Storage<'a, 'b> {
-    file_path: &'a str,
-    name: Option<&'b str>,
+#[derive(Clone)]
+pub struct Storage {
+    file_path: String,
+    name: Option<String>,
 }
 
-impl<'x, 'y> Storage<'x, 'y> {
+impl Storage {
+    pub fn new(path: &str, name: Option<&str>) -> Self {
+        Storage {
+            file_path: path.to_string(),
+            name: name.map(str::to_string),
+        }
+    }
     fn get_bucket(&self) -> Result<Bucket<&str, String>, kv::Error> {
-        let config = kv::Config::new(self.file_path);
+        let config = kv::Config::new(&self.file_path);
         let store = kv::Store::new(config)?;
-        store.bucket::<&str, String>(self.name)
+        store.bucket::<&str, String>(self.name.as_ref().map(String::as_str))
     }
 
     pub async fn insert(&mut self, key: &str, value: &str) -> Result<(), InsertError> {

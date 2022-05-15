@@ -2,12 +2,14 @@
 #![warn(unused_imports)]
 
 use std::env;
-
+use std::sync::{Arc};
+use tokio::sync::{RwLock};
 use actix_web::{middleware, web, App, HttpServer};
 use dotenv::dotenv;
 
 use crate::discord_authorization::DiscordAuthorization;
 use discord::snowflake::Snowflake;
+use crate::domain::Storage;
 
 use crate::endpoints::{interactions, privacy, tos};
 
@@ -23,14 +25,12 @@ async fn main() -> anyhow::Result<()> {
     env_logger::init();
     let config = load_config();
     let public_key = config.public_key;
-    // let db_cfg = kv::Config::new(config.storage_path);
-    // let store = kv::Store::new(db_cfg)?;
-    // let store_box = RwLock::new(Box::new(store));
-
-    // let bucket = store.bucket::<String, String>(Some("notes"))?;
+    let store = Storage::new(config.storage_path.as_str(), None);
+    let storage_box = store;
+    let storage_rw = Arc::new(RwLock::new(storage_box));
     HttpServer::new(move || {
         App::new()
-            // .app_data(web::Data::new(store_box))
+            .app_data(web::Data::from(storage_rw))
             .wrap(middleware::Compress::default())
             .service(privacy)
             .service(tos)
@@ -40,9 +40,9 @@ async fn main() -> anyhow::Result<()> {
                     .service(interactions),
             )
     })
-    .bind(config.socket_addr)?
-    .run()
-    .await?;
+        .bind(config.socket_addr)?
+        .run()
+        .await?;
     Ok(())
 }
 
