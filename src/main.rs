@@ -2,8 +2,6 @@
 #![warn(unused_imports)]
 
 use std::env;
-use std::rc::Rc;
-use std::sync::{Arc, RwLock};
 
 use actix_web::{middleware, web, App, HttpServer};
 use dotenv::dotenv;
