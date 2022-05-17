@@ -4,7 +4,6 @@ use crate::discord::interactions::{
     ApplicationCommandInteractionDataOption, Interaction, InteractionCallback,
     InteractionCallbackMessage, InteractionData, InteractionType,
 };
-use crate::domain::{ReadError, Storage, UpsertError};
 use actix_web::body::BoxBody;
 use actix_web::http::StatusCode;
 use actix_web::post;
@@ -13,6 +12,8 @@ use actix_web::{HttpResponse, ResponseError};
 use log::info;
 use tokio::sync::RwLock;
 use futures_util::future::TryFutureExt;
+use crate::domain::store::*;
+use crate::Storage;
 
 #[post("/interactions")]
 pub async fn interactions(

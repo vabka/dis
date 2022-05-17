@@ -22,6 +22,10 @@ pub struct DiscordBotApiClient {
 }
 
 impl DiscordBotApiClient {
+    pub fn app_id(&self) -> Snowflake {
+        self.app_id
+    }
+
     pub fn new(
         token: &str,
         base_url: &str,
@@ -49,7 +53,7 @@ impl DiscordBotApiClient {
                         HeaderValue::from_str(
                             format!("DiscordBot ({}, {})", bot_url, bot_version).as_str(),
                         )
-                        .expect("user agent header value")
+                            .expect("user agent header value")
                     };
                     map.append("User-Agent", user_agent_header_value);
                     map
@@ -80,7 +84,7 @@ impl DiscordBotApiClient {
     }
 }
 
-#[derive(Debug, Serialize_repr, Deserialize_repr)]
+#[derive(Debug, Serialize_repr, Deserialize_repr, Clone, Copy)]
 #[non_exhaustive]
 #[repr(u8)]
 pub enum ChannelType {

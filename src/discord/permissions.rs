@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 type Inner = i64;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Copy, Clone)]
 pub struct Permissions(
     #[serde(deserialize_with = "serde_aux::deserialize_number_from_string")] Inner,
 );

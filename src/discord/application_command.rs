@@ -7,7 +7,7 @@ use crate::discord::snowflake::Snowflake;
 
 use super::{permissions::Permissions, ChannelType};
 
-#[derive(Debug, Serialize_repr, Deserialize_repr, Eq, PartialEq)]
+#[derive(Debug, Serialize_repr, Deserialize_repr, Eq, PartialEq, Clone, Copy)]
 #[repr(u8)]
 pub enum ApplicationCommandType {
     SubCommand = 1,
@@ -23,7 +23,7 @@ pub enum ApplicationCommandType {
     Attachment = 11,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ApplicationCommandOptionChoice {
     pub name: String,
     pub name_localizations: Option<HashMap<Locale, String>>,
@@ -31,7 +31,7 @@ pub struct ApplicationCommandOptionChoice {
     pub value: ApplicationCommandOptionValue,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(untagged)]
 pub enum ApplicationCommandOptionValue {
     Str(String),
@@ -60,7 +60,95 @@ pub struct ApplicationCommand {
     pub version: Snowflake,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+pub struct ApplicationCommandBuilder<'name, 'description> {
+    id: Snowflake,
+    command_type: Option<ApplicationCommandType>,
+    application_id: Snowflake,
+    guild_id: Option<Snowflake>,
+    name: &'name str,
+    name_localizations: Option<HashMap<Locale, String>>,
+    description: &'description str,
+    description_localizations: Option<HashMap<Locale, String>>,
+    options: Option<Vec<ApplicationCommandOption>>,
+    default_member_permissions: Option<Permissions>,
+    dm_permission: Option<bool>,
+    version: Snowflake,
+}
+
+impl<'a, 'b> ApplicationCommandBuilder<'a, 'b> {
+    pub fn for_application<'name>(name: &'name str, application_id: Snowflake) -> ApplicationCommandBuilder<'name, 'static> {
+        ApplicationCommandBuilder {
+            id: Snowflake::default(),
+            command_type: None,
+            application_id,
+            guild_id: None,
+            name,
+            name_localizations: None,
+            description: "",
+            description_localizations: None,
+            options: None,
+            default_member_permissions: None,
+            dm_permission: None,
+            version: Snowflake::default(),
+        }
+    }
+    pub fn with_option(mut self, option: ApplicationCommandOption) -> Self {
+        if let Some(options) = &mut self.options {
+            options.push(option);
+        } else {
+            self.options = Some(vec![option])
+        }
+        self
+    }
+    pub fn with_description<'description>(self, description: &'description str) -> ApplicationCommandBuilder<'a, 'description> {
+        let ApplicationCommandBuilder {
+            id,
+            command_type,
+            application_id,
+            guild_id,
+            name,
+            name_localizations,
+            options,
+            default_member_permissions,
+            dm_permission,
+            version,
+            description_localizations, ..
+        } = self;
+
+        ApplicationCommandBuilder {
+            id,
+            command_type,
+            application_id,
+            guild_id,
+            name,
+            name_localizations,
+            options,
+            default_member_permissions,
+            dm_permission,
+            version,
+            description_localizations,
+            description,
+        }
+    }
+    pub fn build(self) -> ApplicationCommand {
+        ApplicationCommand {
+            id: self.id,
+            command_type: self.command_type,
+            application_id: self.application_id,
+            guild_id: self.guild_id,
+            name: self.name.to_string(),
+            name_localizations: self.name_localizations,
+            description: self.description.to_string(),
+            description_localizations: self.description_localizations,
+            options: self.options.map(Vec::into_boxed_slice),
+            default_member_permissions: self.default_member_permissions,
+            dm_permission: self.dm_permission,
+            version: self.version,
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ApplicationCommandOption {
     #[serde(rename = "type")]
     pub command_type: ApplicationCommandType,
@@ -77,7 +165,97 @@ pub struct ApplicationCommandOption {
     pub autocomplete: Option<bool>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Hash, Eq, PartialEq)]
+pub struct ApplicationCommandOptionBuilder<'name, 'description> {
+    command_type: ApplicationCommandType,
+    name: &'name str,
+    name_localizations: Option<HashMap<Locale, String>>,
+    description: &'description str,
+    description_localizations: Option<HashMap<Locale, String>>,
+    required: Option<bool>,
+    choices: Option<Vec<ApplicationCommandOptionChoice>>,
+    options: Option<Vec<ApplicationCommandOption>>,
+    channel_types: Option<Vec<ChannelType>>,
+    min_value: Option<f64>,
+    max_value: Option<f64>,
+    autocomplete: Option<bool>,
+}
+
+impl<'a, 'b> ApplicationCommandOptionBuilder<'a, 'b> {
+    pub fn string_option<'name>(name: &'name str) -> ApplicationCommandOptionBuilder<'name, 'static> {
+        ApplicationCommandOptionBuilder {
+            command_type: ApplicationCommandType::String,
+            name,
+            description: "",
+            description_localizations: None,
+            required: None,
+            choices: None,
+            options: None,
+            channel_types: None,
+            min_value: None,
+            max_value: None,
+            name_localizations: None,
+            autocomplete: None,
+        }
+    }
+    pub fn with_description<'description>(self, description: &'description str) -> ApplicationCommandOptionBuilder<'a, 'description> {
+        let ApplicationCommandOptionBuilder {
+            command_type,
+            name,
+            name_localizations,
+            description_localizations,
+            required,
+            choices,
+            options,
+            channel_types,
+            min_value,
+            max_value,
+            autocomplete, ..
+        } = self;
+
+        ApplicationCommandOptionBuilder {
+            command_type,
+            name,
+            name_localizations,
+            description,
+            description_localizations,
+            required,
+            choices,
+            options,
+            channel_types,
+            min_value,
+            max_value,
+            autocomplete,
+        }
+    }
+    pub fn required(mut self) -> Self {
+        self.required = Some(true);
+        self
+    }
+
+    pub fn not_required(mut self) -> Self {
+        self.required = Some(false);
+        self
+    }
+
+    pub fn build(self) -> ApplicationCommandOption {
+        ApplicationCommandOption {
+            command_type: self.command_type,
+            name: self.name.to_string(),
+            name_localizations: self.name_localizations,
+            description: self.description.to_string(),
+            description_localizations: self.description_localizations,
+            required: self.required,
+            choices: self.choices.map(Vec::into_boxed_slice),
+            options: self.options.map(Vec::into_boxed_slice),
+            channel_types: self.channel_types.map(Vec::into_boxed_slice),
+            min_value: self.min_value,
+            max_value: self.max_value,
+            autocomplete: self.autocomplete,
+        }
+    }
+}
+
+#[derive(Debug, Deserialize, Serialize, Hash, Eq, PartialEq, Clone)]
 pub struct Locale(String);
 
 impl Locale {

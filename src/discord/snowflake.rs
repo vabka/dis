@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Deserialize)]
 pub struct Snowflake(#[serde(deserialize_with = "serde_aux::deserialize_number_from_string")] i64);
+
 pub const DISCORD_EPOCH: i64 = 1420070400000;
 
 impl Display for Snowflake {
@@ -15,10 +16,16 @@ impl Display for Snowflake {
 
 impl Serialize for Snowflake {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
+        where
+            S: serde::Serializer,
     {
         serializer.serialize_str(self.0.to_string().as_str())
+    }
+}
+
+impl Default for Snowflake {
+    fn default() -> Self {
+        Snowflake::zero()
     }
 }
 
