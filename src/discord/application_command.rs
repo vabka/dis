@@ -60,6 +60,12 @@ pub struct ApplicationCommand {
     pub version: Snowflake,
 }
 
+impl ApplicationCommand {
+    pub fn build_for_application(command_name: &str, application_id: Snowflake) -> ApplicationCommandBuilder {
+        ApplicationCommandBuilder::for_application(command_name, application_id)
+    }
+}
+
 pub struct ApplicationCommandBuilder<'builder> {
     id: Snowflake,
     command_type: Option<ApplicationCommandType>,
@@ -106,7 +112,7 @@ impl<'builder> ApplicationCommandBuilder<'builder> {
             ..self
         }
     }
-    pub fn build(self) -> ApplicationCommand {
+    pub fn finish(self) -> ApplicationCommand {
         ApplicationCommand {
             id: self.id,
             command_type: self.command_type,
@@ -139,6 +145,12 @@ pub struct ApplicationCommandOption {
     pub min_value: Option<f64>,
     pub max_value: Option<f64>,
     pub autocomplete: Option<bool>,
+}
+
+impl ApplicationCommandOption {
+    pub fn build_string_option(name: &str) -> ApplicationCommandOptionBuilder {
+        ApplicationCommandOptionBuilder::string_option(name)
+    }
 }
 
 pub struct ApplicationCommandOptionBuilder<'builder> {
@@ -189,7 +201,7 @@ impl<'builder> ApplicationCommandOptionBuilder<'builder> {
         self
     }
 
-    pub fn build(self) -> ApplicationCommandOption {
+    pub fn finish(self) -> ApplicationCommandOption {
         ApplicationCommandOption {
             command_type: self.command_type,
             name: self.name.to_string(),

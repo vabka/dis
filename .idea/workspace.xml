@@ -12,12 +12,15 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="552f035a-7359-4b84-b25c-20b57e500a74" name="Changes" comment="Refactoring in permissions">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="552f035a-7359-4b84-b25c-20b57e500a74" name="Changes" comment="Refactoring in discord module">
+      <change afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/discord/application_command.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/discord/application_command.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/discord/permissions.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/discord/permissions.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/domain/commands.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/domain/commands.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/domain/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/domain/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/endpoints/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/endpoints/post_interactions.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/post_interactions.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -226,7 +229,7 @@
       <workItem from="1652559386479" duration="4126000" />
       <workItem from="1652563563930" duration="896000" />
       <workItem from="1652564666573" duration="9768000" />
-      <workItem from="1652801648591" duration="9023000" />
+      <workItem from="1652801648591" duration="15421000" />
     </task>
     <task id="LOCAL-00001" summary="Refactoring in command dispatch">
       <created>1652563357302</created>
@@ -277,7 +280,14 @@
       <option name="project" value="LOCAL" />
       <updated>1652864220613</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Refactoring in discord module">
+      <created>1652864353090</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1652864353090</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -326,7 +336,8 @@
     <MESSAGE value="Implement get/set" />
     <MESSAGE value="Implement commands definition" />
     <MESSAGE value="Refactoring in permissions" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactoring in permissions" />
+    <MESSAGE value="Refactoring in discord module" />
+    <option name="LAST_COMMIT_MESSAGE" value="Refactoring in discord module" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

@@ -10,10 +10,11 @@ use dotenv::dotenv;
 use crate::discord_authorization::DiscordAuthorization;
 use discord::snowflake::Snowflake;
 use crate::discord::DiscordBotApiClient;
-use crate::domain::define_commands;
+use crate::domain::declare_commands;
 use crate::domain::store::Storage;
 
 use crate::endpoints::{interactions, privacy, tos};
+use crate::endpoints::interaction_pipeline::{InteractionPipeline, PingInteractionHandler};
 
 mod discord;
 mod discord_authorization;
@@ -28,13 +29,14 @@ async fn main() -> anyhow::Result<()> {
     let config = load_config();
     let public_key = config.public_key;
     let client = DiscordBotApiClient::new(config.token.as_str(), config.base_url.as_str(), config.bot_url.as_str(), "0.1", config.app_id);
-    define_commands(&client).await?;
+    declare_commands(&client).await?;
     HttpServer::new(move || {
         let store = Storage::new(config.storage_path.as_str(), None);
         let storage_box = store;
         let storage_rw = Arc::new(RwLock::new(storage_box));
         App::new()
             .app_data(web::Data::from(storage_rw))
+            .app_data(web::Data::new(InteractionPipeline::new(vec![Box::new(PingInteractionHandler)])))
             .wrap(middleware::Compress::default())
             .service(privacy)
             .service(tos)

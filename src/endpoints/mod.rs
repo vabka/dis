@@ -1,9 +1,11 @@
-pub use self::post_interactions::interactions;
 use actix_web::get;
 use actix_web::HttpResponse;
 use actix_web::Responder;
 
 mod post_interactions;
+pub mod interaction_pipeline;
+
+pub use self::post_interactions::interactions;
 
 #[get("/tos")]
 pub async fn tos() -> impl Responder {

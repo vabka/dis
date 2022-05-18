@@ -1,3 +1,3 @@
 pub mod store;
 mod commands;
-pub use commands::define_commands;
+pub use commands::declare_commands;
