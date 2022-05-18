@@ -60,14 +60,14 @@ pub struct ApplicationCommand {
     pub version: Snowflake,
 }
 
-pub struct ApplicationCommandBuilder<'name, 'description> {
+pub struct ApplicationCommandBuilder<'builder> {
     id: Snowflake,
     command_type: Option<ApplicationCommandType>,
     application_id: Snowflake,
     guild_id: Option<Snowflake>,
-    name: &'name str,
+    name: &'builder str,
     name_localizations: Option<HashMap<Locale, String>>,
-    description: &'description str,
+    description: &'builder str,
     description_localizations: Option<HashMap<Locale, String>>,
     options: Option<Vec<ApplicationCommandOption>>,
     default_member_permissions: Option<Permissions>,
@@ -75,8 +75,8 @@ pub struct ApplicationCommandBuilder<'name, 'description> {
     version: Snowflake,
 }
 
-impl<'a, 'b> ApplicationCommandBuilder<'a, 'b> {
-    pub fn for_application<'name>(name: &'name str, application_id: Snowflake) -> ApplicationCommandBuilder<'name, 'static> {
+impl<'builder> ApplicationCommandBuilder<'builder> {
+    pub fn for_application(name: &'builder str, application_id: Snowflake) -> ApplicationCommandBuilder<'builder> {
         ApplicationCommandBuilder {
             id: Snowflake::default(),
             command_type: None,
@@ -100,34 +100,10 @@ impl<'a, 'b> ApplicationCommandBuilder<'a, 'b> {
         }
         self
     }
-    pub fn with_description<'description>(self, description: &'description str) -> ApplicationCommandBuilder<'a, 'description> {
-        let ApplicationCommandBuilder {
-            id,
-            command_type,
-            application_id,
-            guild_id,
-            name,
-            name_localizations,
-            options,
-            default_member_permissions,
-            dm_permission,
-            version,
-            description_localizations, ..
-        } = self;
-
+    pub fn with_description(self, description: &'builder str) -> ApplicationCommandBuilder<'builder> {
         ApplicationCommandBuilder {
-            id,
-            command_type,
-            application_id,
-            guild_id,
-            name,
-            name_localizations,
-            options,
-            default_member_permissions,
-            dm_permission,
-            version,
-            description_localizations,
             description,
+            ..self
         }
     }
     pub fn build(self) -> ApplicationCommand {
@@ -165,11 +141,11 @@ pub struct ApplicationCommandOption {
     pub autocomplete: Option<bool>,
 }
 
-pub struct ApplicationCommandOptionBuilder<'name, 'description> {
+pub struct ApplicationCommandOptionBuilder<'builder> {
     command_type: ApplicationCommandType,
-    name: &'name str,
+    name: &'builder str,
     name_localizations: Option<HashMap<Locale, String>>,
-    description: &'description str,
+    description: &'builder str,
     description_localizations: Option<HashMap<Locale, String>>,
     required: Option<bool>,
     choices: Option<Vec<ApplicationCommandOptionChoice>>,
@@ -180,8 +156,8 @@ pub struct ApplicationCommandOptionBuilder<'name, 'description> {
     autocomplete: Option<bool>,
 }
 
-impl<'a, 'b> ApplicationCommandOptionBuilder<'a, 'b> {
-    pub fn string_option<'name>(name: &'name str) -> ApplicationCommandOptionBuilder<'name, 'static> {
+impl<'builder> ApplicationCommandOptionBuilder<'builder> {
+    pub fn string_option(name: &'builder str) -> ApplicationCommandOptionBuilder<'builder> {
         ApplicationCommandOptionBuilder {
             command_type: ApplicationCommandType::String,
             name,
@@ -197,34 +173,10 @@ impl<'a, 'b> ApplicationCommandOptionBuilder<'a, 'b> {
             autocomplete: None,
         }
     }
-    pub fn with_description<'description>(self, description: &'description str) -> ApplicationCommandOptionBuilder<'a, 'description> {
-        let ApplicationCommandOptionBuilder {
-            command_type,
-            name,
-            name_localizations,
-            description_localizations,
-            required,
-            choices,
-            options,
-            channel_types,
-            min_value,
-            max_value,
-            autocomplete, ..
-        } = self;
-
+    pub fn with_description(self, description: &'builder str) -> ApplicationCommandOptionBuilder<'builder> {
         ApplicationCommandOptionBuilder {
-            command_type,
-            name,
-            name_localizations,
             description,
-            description_localizations,
-            required,
-            choices,
-            options,
-            channel_types,
-            min_value,
-            max_value,
-            autocomplete,
+            ..self
         }
     }
     pub fn required(mut self) -> Self {
