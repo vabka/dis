@@ -27,23 +27,6 @@ pub async fn interactions(
 
 async fn dispatch(data: &InteractionData, store: web::Data<RwLock<Storage>>) -> Result<InteractionCallback, InteractionError> {
     match data.name.as_str() {
-        "echo" => data
-            .options
-            .as_ref()
-            .and_then(|x| match x.as_ref() {
-                [ApplicationCommandInteractionDataOption {
-                    name: n,
-                    application_command_option_type: ApplicationCommandType::String,
-                    value: Str(s),
-                }] if n == "text" => {
-                    let msg = InteractionCallbackMessage {
-                        content: Some(s.to_owned()),
-                    };
-                    Some(InteractionCallback::channel_message_with_source(msg))
-                }
-                _ => None,
-            })
-            .ok_or(InteractionError::InvalidCommand),
         "set" => {
             let (key, value) = data.options
                 .as_ref()

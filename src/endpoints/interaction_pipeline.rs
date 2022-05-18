@@ -1,6 +1,9 @@
 use std::future::{Future, ready};
 use futures_util::future::BoxFuture;
-use crate::discord::interactions::{Interaction, InteractionCallback, InteractionType};
+use crate::discord::application_command::ApplicationCommandOptionValue::Str;
+use crate::discord::application_command::ApplicationCommandType;
+use crate::discord::interactions::{ApplicationCommandInteractionDataOption, Interaction, InteractionCallback, InteractionCallbackMessage, InteractionType};
+use crate::discord::interactions::InteractionType::ApplicationCommand;
 use crate::endpoints::post_interactions::InteractionError;
 
 pub type InteractionHandlerResult = Option<Result<InteractionCallback, InteractionError>>;
@@ -43,5 +46,35 @@ impl InteractionHandler for PingInteractionHandler {
         } else {
             Box::pin(ready(None))
         }
+    }
+}
+
+pub struct EchoCommandHandler;
+
+impl InteractionHandler for EchoCommandHandler {
+    type Future = Task<InteractionHandlerResult>;
+
+    fn handle(&self, interaction: &Interaction) -> Self::Future {
+        Box::pin(ready(Some(interaction)
+            .filter(|i| i.interaction_type == ApplicationCommand)
+            .and_then(|i|
+                i.data.as_ref()
+                    .filter(|data| data.name == "echo")
+                    .and_then(|data| data.options.as_ref())
+                    .map(|options| match options.as_ref() {
+                        [ApplicationCommandInteractionDataOption {
+                            name: n,
+                            application_command_option_type: ApplicationCommandType::String,
+                            value: Str(text)
+                        }] if n == "text" => {
+                            let msg = InteractionCallbackMessage {
+                                content: Some(text.to_string())
+                            };
+                            let callback = InteractionCallback::channel_message_with_source(msg);
+                            Ok(callback)
+                        }
+                        _ => Err(InteractionError::InvalidCommand)
+                    }))
+        ))
     }
 }

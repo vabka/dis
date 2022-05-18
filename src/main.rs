@@ -14,7 +14,7 @@ use crate::domain::declare_commands;
 use crate::domain::store::Storage;
 
 use crate::endpoints::{interactions, privacy, tos};
-use crate::endpoints::interaction_pipeline::{InteractionPipeline, PingInteractionHandler};
+use crate::endpoints::interaction_pipeline::{EchoCommandHandler, InteractionPipeline, PingInteractionHandler};
 
 mod discord;
 mod discord_authorization;
@@ -36,7 +36,10 @@ async fn main() -> anyhow::Result<()> {
         let storage_rw = Arc::new(RwLock::new(storage_box));
         App::new()
             .app_data(web::Data::from(storage_rw))
-            .app_data(web::Data::new(InteractionPipeline::new(vec![Box::new(PingInteractionHandler)])))
+            .app_data(web::Data::new(InteractionPipeline::new(vec![
+                Box::new(PingInteractionHandler),
+                Box::new(EchoCommandHandler),
+            ])))
             .wrap(middleware::Compress::default())
             .service(privacy)
             .service(tos)
