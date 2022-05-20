@@ -12,18 +12,9 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="552f035a-7359-4b84-b25c-20b57e500a74" name="Changes" comment="Refactoring in command handlers">
+    <list default="true" id="552f035a-7359-4b84-b25c-20b57e500a74" name="Changes" comment="Fix compilation">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/domain/store.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/domain/store.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/echo.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/echo.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/get.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/get.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/ls.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/ls.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/set.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/set.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/error.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/error.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/ping.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/ping.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/endpoints/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/mod.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -239,7 +230,7 @@
       <workItem from="1652801648591" duration="22713000" />
       <workItem from="1653071802437" duration="706000" />
       <workItem from="1653078164836" duration="6012000" />
-      <workItem from="1653084797648" duration="4126000" />
+      <workItem from="1653084797648" duration="4209000" />
     </task>
     <task id="LOCAL-00001" summary="Refactoring in command dispatch">
       <created>1652563357302</created>
@@ -332,7 +323,14 @@
       <option name="project" value="LOCAL" />
       <updated>1653088639548</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Fix compilation">
+      <created>1653088966782</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1653088966782</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -387,7 +385,8 @@
     <MESSAGE value="Finish implementing basic commands" />
     <MESSAGE value="Some cleanup" />
     <MESSAGE value="Refactoring in command handlers" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactoring in command handlers" />
+    <MESSAGE value="Fix compilation" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix compilation" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

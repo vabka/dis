@@ -18,6 +18,7 @@ pub use ls::LsCommandHandler;
 pub use set::SetCommandHandler;
 
 type CommandHandlerResult = Result<InteractionCallback, InteractionError>;
+
 trait CommandHandler {
     type Args;
     type Context;
@@ -28,8 +29,8 @@ trait CommandHandler {
     fn handle(&self, args: Self::Args, context: &Self::Context) -> Self::Future;
 }
 
-impl<T: CommandHandler<Future = Task<CommandHandlerResult>, Context = C>, C> InteractionHandler
-    for T
+impl<T: CommandHandler<Future=Task<CommandHandlerResult>, Context=C>, C> InteractionHandler
+for T
 {
     type Future = Task<InteractionHandlerResult>;
     type Context = C;
@@ -37,15 +38,11 @@ impl<T: CommandHandler<Future = Task<CommandHandlerResult>, Context = C>, C> Int
     fn handle(&self, interaction: &Interaction, context: &Self::Context) -> Self::Future {
         let args = Some(interaction)
             .filter(|i| i.interaction_type == InteractionType::ApplicationCommand)
-            .and_then(|i| {
-                Some(
-                    i.data
-                        .as_ref()
-                        .filter(|d| d.name == <Self as CommandHandler>::name())
-                        .and_then(<Self as CommandHandler>::parse_args)
-                        .ok_or(InteractionError::InvalidCommand),
-                )
-            });
+            .map(|i| i.data
+                .as_ref()
+                .filter(|d| d.name == <Self as CommandHandler>::name())
+                .and_then(<Self as CommandHandler>::parse_args)
+                .ok_or(InteractionError::InvalidCommand));
         match args {
             Some(Ok(args)) => Box::pin(self.handle(args, context).map(Some)),
             Some(Err(e)) => Box::pin(ready(Some(Err(e)))),
