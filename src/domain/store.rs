@@ -1,4 +1,5 @@
 use kv::{Bucket, Error, Store};
+use log::debug;
 
 #[derive(Clone)]
 pub struct Storage {
@@ -17,7 +18,7 @@ impl Storage {
         self.store.bucket::<&str, String>(self.name.as_ref().map(String::as_str))
     }
 
-    pub async fn insert(&mut self, key: &str, value: &str) -> Result<(), InsertError> {
+    pub async fn insert(&self, key: &str, value: &str) -> Result<(), InsertError> {
         let bucket = self.get_bucket()?;
         if bucket.contains(key)? {
             return Err(InsertError::ExistingKey);
@@ -27,7 +28,7 @@ impl Storage {
         Ok(())
     }
 
-    pub async fn update(&mut self, key: &str, value: &str) -> Result<(), UpdateError> {
+    pub async fn update(&self, key: &str, value: &str) -> Result<(), UpdateError> {
         let bucket = self.get_bucket()?;
         if !bucket.contains(key)? {
             return Err(UpdateError::MissingKey);
@@ -37,14 +38,14 @@ impl Storage {
         Ok(())
     }
 
-    pub async fn upsert(&mut self, key: &str, value: &str) -> Result<(), UpsertError> {
+    pub async fn upsert(&self, key: &str, value: &str) -> Result<(), UpsertError> {
         let bucket = self.get_bucket()?;
         bucket.set(key, value)?;
         bucket.flush_async().await?;
         Ok(())
     }
 
-    pub async fn delete(&mut self, key: &str) -> Result<(), DeleteError> {
+    pub async fn delete(&self, key: &str) -> Result<(), DeleteError> {
         let bucket = self.get_bucket()?;
         if !bucket.contains(key)? {
             return Err(DeleteError::MissingKey);
@@ -56,9 +57,6 @@ impl Storage {
 
     pub async fn read(&self, key: &str) -> Result<String, ReadError> {
         let bucket = self.get_bucket()?;
-        if bucket.contains(key)? {
-            return Err(ReadError::MissingKey);
-        }
         bucket.get(key)?.ok_or(ReadError::NoData)
     }
 

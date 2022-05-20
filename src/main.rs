@@ -14,7 +14,7 @@ use crate::domain::declare_commands;
 use crate::domain::store::Storage;
 
 use crate::endpoints::{interactions, privacy, tos};
-use crate::endpoints::interaction_pipeline::{BotContext, EchoCommandHandler, InteractionPipeline, PingInteractionHandler};
+use crate::endpoints::interaction_pipeline::{BotContext, EchoCommandHandler, GetCommandHandler, InteractionPipeline, LsCommandHandler, PingInteractionHandler, SetCommandHandler};
 
 mod discord;
 mod discord_authorization;
@@ -31,14 +31,17 @@ async fn main() -> anyhow::Result<()> {
     let store = Storage::new(config.storage_path.as_str(), None)?;
 
     let client = DiscordBotApiClient::new(config.token.as_str(), config.base_url.as_str(), config.bot_url.as_str(), "0.1", config.app_id);
-    declare_commands(&client).await?;
+    // declare_commands(&client).await?;
     let bot_context = BotContext::new(store, client);
     HttpServer::new(move || {
         App::new()
-            .app_data(web::Data::new(bot_context))
+            .app_data(web::Data::new(bot_context.clone()))
             .app_data(web::Data::new(InteractionPipeline::new(vec![
                 Box::new(PingInteractionHandler),
                 Box::new(EchoCommandHandler),
+                Box::new(SetCommandHandler),
+                Box::new(LsCommandHandler),
+                Box::new(GetCommandHandler),
             ])))
             .wrap(middleware::Compress::default())
             .service(privacy)
