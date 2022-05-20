@@ -1,22 +1,20 @@
-use kv::Bucket;
+use kv::{Bucket, Error, Store};
 
 #[derive(Clone)]
 pub struct Storage {
-    file_path: String,
+    store: Store,
     name: Option<String>,
 }
 
 impl Storage {
-    pub fn new(path: &str, name: Option<&str>) -> Self {
-        Storage {
-            file_path: path.to_string(),
-            name: name.map(str::to_string),
-        }
-    }
-    fn get_bucket(&self) -> Result<Bucket<&str, String>, kv::Error> {
-        let config = kv::Config::new(&self.file_path);
+    pub fn new(path: &str, name: Option<&str>) -> Result<Self, kv::Error> {
+        let config = kv::Config::new(path);
         let store = kv::Store::new(config)?;
-        store.bucket::<&str, String>(self.name.as_ref().map(String::as_str))
+        Ok(Self { store, name: name.map(String::from) })
+    }
+
+    fn get_bucket(&self) -> Result<Bucket<&str, String>, kv::Error> {
+        self.store.bucket::<&str, String>(self.name.as_ref().map(String::as_str))
     }
 
     pub async fn insert(&mut self, key: &str, value: &str) -> Result<(), InsertError> {
@@ -62,6 +60,29 @@ impl Storage {
             return Err(ReadError::MissingKey);
         }
         bucket.get(key)?.ok_or(ReadError::NoData)
+    }
+
+    pub async fn list(&self) -> Result<Vec<String>, ListError> {
+        let bucket = self.get_bucket()?;
+        let mut keys = vec![];
+        for item in bucket.iter() {
+            let item = item?;
+            let key: String = item.key()?;
+            keys.push(key);
+        }
+        Ok(keys)
+    }
+}
+
+#[derive(err_derive::Error, Debug)]
+pub enum ListError {
+    #[error(display = "Error in kv::")]
+    Kv(kv::Error)
+}
+
+impl From<kv::Error> for ListError {
+    fn from(e: Error) -> Self {
+        ListError::Kv(e)
     }
 }
 

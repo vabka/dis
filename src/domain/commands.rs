@@ -1,4 +1,4 @@
-use crate::discord::application_command::{ApplicationCommand, ApplicationCommandBuilder, ApplicationCommandOption, ApplicationCommandOptionBuilder};
+use crate::discord::application_command::{ApplicationCommand, ApplicationCommandOption, ApplicationCommandOptionBuilder};
 use crate::discord::DiscordBotApiClient;
 
 pub async fn declare_commands(client: &DiscordBotApiClient) -> anyhow::Result<()> {
@@ -12,6 +12,7 @@ pub async fn declare_commands(client: &DiscordBotApiClient) -> anyhow::Result<()
             .required()
             .with_description("Text of note")
             .finish())
+        // TODO autocomplete
         .finish();
 
     let get = ApplicationCommand::build_for_application("get", client.app_id())
@@ -20,6 +21,7 @@ pub async fn declare_commands(client: &DiscordBotApiClient) -> anyhow::Result<()
             .required()
             .with_description("Key of note")
             .finish())
+        // TODO autocomplete
         .finish();
 
     let echo = ApplicationCommand::build_for_application("echo", client.app_id())
@@ -30,8 +32,13 @@ pub async fn declare_commands(client: &DiscordBotApiClient) -> anyhow::Result<()
             .finish())
         .finish();
 
+    let ls = ApplicationCommand::build_for_application("ls", client.app_id())
+        .with_description("List all available notes")
+        .finish();
+
     client.create_application_command(&set).await?;
     client.create_application_command(&get).await?;
     client.create_application_command(&echo).await?;
+    client.create_application_command(&ls).await?;
     Ok(())
 }

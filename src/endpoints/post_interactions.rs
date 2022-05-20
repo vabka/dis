@@ -14,14 +14,15 @@ use log::{debug, error};
 use tokio::sync::RwLock;
 use crate::domain::store::*;
 use crate::Storage;
-use crate::endpoints::interaction_pipeline::InteractionPipeline;
+use crate::endpoints::interaction_pipeline::{InteractionPipeline, BotContext};
 
 #[post("/interactions")]
 pub async fn interactions(
     interaction: Json<Interaction>,
-    pipeline: web::Data<InteractionPipeline>,
+    pipeline: web::Data<InteractionPipeline<BotContext>>,
+    bot_context: web::Data<BotContext>
 ) -> Result<Json<InteractionCallback>, InteractionError> {
-    pipeline.handle(interaction.into_inner()).await.map(Json)
+    pipeline.handle(interaction.into_inner(), &bot_context).await.map(Json)
 }
 
 

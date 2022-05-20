@@ -4,30 +4,44 @@ use crate::discord::application_command::ApplicationCommandOptionValue::Str;
 use crate::discord::application_command::ApplicationCommandType;
 use crate::discord::interactions::{ApplicationCommandInteractionDataOption, Interaction, InteractionCallback, InteractionCallbackMessage, InteractionType};
 use crate::discord::interactions::InteractionType::ApplicationCommand;
+use crate::{DiscordBotApiClient, Storage};
 use crate::endpoints::post_interactions::InteractionError;
 
 pub type InteractionHandlerResult = Option<Result<InteractionCallback, InteractionError>>;
 
 pub trait InteractionHandler {
     type Future: Future<Output=InteractionHandlerResult>;
-    fn handle(&self, interaction: &Interaction) -> Self::Future;
+    type Context;
+    fn handle(&self, interaction: &Interaction, context: &Self::Context) -> Self::Future;
 }
 
 pub type Task<T> = BoxFuture<'static, T>;
 
-pub struct InteractionPipeline {
-    handlers: Vec<Box<dyn InteractionHandler<Future=Task<InteractionHandlerResult>>>>,
+#[derive(Clone)]
+pub struct BotContext {
+    store: Storage,
+    api_client: DiscordBotApiClient,
 }
 
-impl InteractionPipeline {
-    pub fn new(handlers: Vec<Box<dyn InteractionHandler<Future=Task<InteractionHandlerResult>>>>) -> Self {
+impl BotContext {
+    pub fn new(store: Storage, api_client: DiscordBotApiClient) -> Self {
+        Self { store, api_client }
+    }
+}
+
+pub struct InteractionPipeline<TContext> {
+    handlers: Vec<Box<dyn InteractionHandler<Future=Task<InteractionHandlerResult>, Context=TContext>>>,
+}
+
+impl<TContext> InteractionPipeline<TContext> {
+    pub fn new(handlers: Vec<Box<dyn InteractionHandler<Future=Task<InteractionHandlerResult>, Context=TContext>>>) -> Self {
         Self {
             handlers
         }
     }
-    pub async fn handle(&self, interaction: Interaction) -> Result<InteractionCallback, InteractionError> {
+    pub async fn handle(&self, interaction: Interaction, context: &TContext) -> Result<InteractionCallback, InteractionError> {
         for handler in &self.handlers {
-            if let Some(result) = handler.handle(&interaction).await {
+            if let Some(result) = handler.handle(&interaction, context).await {
                 return result;
             }
         }
@@ -39,8 +53,9 @@ pub struct PingInteractionHandler;
 
 impl InteractionHandler for PingInteractionHandler {
     type Future = Task<InteractionHandlerResult>;
+    type Context = BotContext;
 
-    fn handle(&self, interaction: &Interaction) -> Self::Future {
+    fn handle(&self, interaction: &Interaction, _: &Self::Context) -> Self::Future {
         if interaction.interaction_type == InteractionType::Ping {
             Box::pin(ready(Some(Ok(InteractionCallback::pong()))))
         } else {
@@ -53,15 +68,16 @@ pub struct EchoCommandHandler;
 
 impl InteractionHandler for EchoCommandHandler {
     type Future = Task<InteractionHandlerResult>;
+    type Context = BotContext;
 
-    fn handle(&self, interaction: &Interaction) -> Self::Future {
+    fn handle(&self, interaction: &Interaction, _: &Self::Context) -> Self::Future {
         Box::pin(ready(Some(interaction)
             .filter(|i| i.interaction_type == ApplicationCommand)
             .and_then(|i|
                 i.data.as_ref()
-                    .filter(|data| data.name == "echo")
-                    .and_then(|data| data.options.as_ref())
-                    .map(|options| match options.as_ref() {
+                    .filter(|d| d.name == "echo")
+                    .and_then(|d| d.options.as_ref())
+                    .map(|o| match o.as_ref() {
                         [ApplicationCommandInteractionDataOption {
                             name: n,
                             application_command_option_type: ApplicationCommandType::String,

@@ -14,6 +14,7 @@ pub mod interactions;
 pub mod permissions;
 pub mod snowflake;
 
+#[derive(Clone)]
 pub struct DiscordBotApiClient {
     token: String,
     base_url: String,
