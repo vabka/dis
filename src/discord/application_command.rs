@@ -61,7 +61,10 @@ pub struct ApplicationCommand {
 }
 
 impl ApplicationCommand {
-    pub fn build_for_application(command_name: &str, application_id: Snowflake) -> ApplicationCommandBuilder {
+    pub fn build_for_application(
+        command_name: &str,
+        application_id: Snowflake,
+    ) -> ApplicationCommandBuilder {
         ApplicationCommandBuilder::for_application(command_name, application_id)
     }
 }
@@ -82,7 +85,10 @@ pub struct ApplicationCommandBuilder<'builder> {
 }
 
 impl<'builder> ApplicationCommandBuilder<'builder> {
-    pub fn for_application(name: &'builder str, application_id: Snowflake) -> ApplicationCommandBuilder<'builder> {
+    pub fn for_application(
+        name: &'builder str,
+        application_id: Snowflake,
+    ) -> ApplicationCommandBuilder<'builder> {
         ApplicationCommandBuilder {
             id: Snowflake::default(),
             command_type: None,
@@ -106,7 +112,10 @@ impl<'builder> ApplicationCommandBuilder<'builder> {
         }
         self
     }
-    pub fn with_description(self, description: &'builder str) -> ApplicationCommandBuilder<'builder> {
+    pub fn with_description(
+        self,
+        description: &'builder str,
+    ) -> ApplicationCommandBuilder<'builder> {
         ApplicationCommandBuilder {
             description,
             ..self
@@ -185,7 +194,10 @@ impl<'builder> ApplicationCommandOptionBuilder<'builder> {
             autocomplete: None,
         }
     }
-    pub fn with_description(self, description: &'builder str) -> ApplicationCommandOptionBuilder<'builder> {
+    pub fn with_description(
+        self,
+        description: &'builder str,
+    ) -> ApplicationCommandOptionBuilder<'builder> {
         ApplicationCommandOptionBuilder {
             description,
             ..self

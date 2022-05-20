@@ -1,18 +1,25 @@
-use std::future::{Future, ready};
-use futures_util::future::{BoxFuture, LocalBoxFuture};
-use log::debug;
+mod error;
+
 use crate::discord::application_command::ApplicationCommandOptionValue::Str;
 use crate::discord::application_command::ApplicationCommandType;
-use crate::discord::interactions::{ApplicationCommandInteractionDataOption, Interaction, InteractionCallback, InteractionCallbackMessage, InteractionType};
-use crate::discord::interactions::InteractionType::ApplicationCommand;
-use crate::{DiscordBotApiClient, Storage};
-use crate::domain::store::ListError;
-use crate::endpoints::post_interactions::InteractionError;
+use crate::discord::interactions::{
+    ApplicationCommandInteractionDataOption,
+    Interaction,
+    InteractionCallback,
+    InteractionCallbackMessage,
+    InteractionType::{ApplicationCommand, self},
+};
 
+use crate::{DiscordBotApiClient, Storage};
+use futures_util::future::{LocalBoxFuture};
+use log::debug;
+use std::future::{ready, Future};
+
+pub use error::InteractionError;
 pub type InteractionHandlerResult = Option<Result<InteractionCallback, InteractionError>>;
 
 pub trait InteractionHandler {
-    type Future: Future<Output=InteractionHandlerResult>;
+    type Future: Future<Output = InteractionHandlerResult>;
     type Context;
     fn handle(&self, interaction: &Interaction, context: &Self::Context) -> Self::Future;
 }
@@ -32,16 +39,26 @@ impl BotContext {
 }
 
 pub struct InteractionPipeline<TContext> {
-    handlers: Vec<Box<dyn InteractionHandler<Future=Task<InteractionHandlerResult>, Context=TContext>>>,
+    handlers: Vec<
+        Box<dyn InteractionHandler<Future = Task<InteractionHandlerResult>, Context = TContext>>,
+    >,
 }
 
 impl<TContext> InteractionPipeline<TContext> {
-    pub fn new(handlers: Vec<Box<dyn InteractionHandler<Future=Task<InteractionHandlerResult>, Context=TContext>>>) -> Self {
-        Self {
-            handlers
-        }
+    pub fn new(
+        handlers: Vec<
+            Box<
+                dyn InteractionHandler<Future = Task<InteractionHandlerResult>, Context = TContext>,
+            >,
+        >,
+    ) -> Self {
+        Self { handlers }
     }
-    pub async fn handle(&self, interaction: Interaction, context: &TContext) -> Result<InteractionCallback, InteractionError> {
+    pub async fn handle(
+        &self,
+        interaction: Interaction,
+        context: &TContext,
+    ) -> Result<InteractionCallback, InteractionError> {
         for handler in &self.handlers {
             if let Some(result) = handler.handle(&interaction, context).await {
                 return result;
@@ -73,26 +90,30 @@ impl InteractionHandler for EchoCommandHandler {
     type Context = BotContext;
 
     fn handle(&self, interaction: &Interaction, _: &Self::Context) -> Self::Future {
-        Box::pin(ready(Some(interaction)
-            .filter(|i| i.interaction_type == ApplicationCommand)
-            .and_then(|i|
-                i.data.as_ref()
-                    .filter(|d| d.name == "echo")
-                    .and_then(|d| d.options.as_ref())
-                    .map(|o| match o.as_ref() {
-                        [ApplicationCommandInteractionDataOption {
-                            name: n,
-                            application_command_option_type: ApplicationCommandType::String,
-                            value: Str(text)
-                        }] if n == "text" => {
-                            let msg = InteractionCallbackMessage {
-                                content: Some(text.to_string())
-                            };
-                            let callback = InteractionCallback::channel_message_with_source(msg);
-                            Ok(callback)
-                        }
-                        _ => Err(InteractionError::InvalidCommand)
-                    }))
+        Box::pin(ready(
+            Some(interaction)
+                .filter(|i| i.interaction_type == ApplicationCommand)
+                .and_then(|i| {
+                    i.data
+                        .as_ref()
+                        .filter(|d| d.name == "echo")
+                        .and_then(|d| d.options.as_ref())
+                        .map(|o| match o.as_ref() {
+                            [ApplicationCommandInteractionDataOption {
+                                name: n,
+                                application_command_option_type: ApplicationCommandType::String,
+                                value: Str(text),
+                            }] if n == "text" => {
+                                let msg = InteractionCallbackMessage {
+                                    content: Some(text.to_string()),
+                                };
+                                let callback =
+                                    InteractionCallback::channel_message_with_source(msg);
+                                Ok(callback)
+                            }
+                            _ => Err(InteractionError::InvalidCommand),
+                        })
+                }),
         ))
     }
 }
@@ -105,25 +126,26 @@ impl InteractionHandler for SetCommandHandler {
     fn handle(&self, interaction: &Interaction, context: &Self::Context) -> Self::Future {
         let args = Some(interaction)
             .filter(|i| i.interaction_type == ApplicationCommand)
-            .and_then(|i|
-                i.data.as_ref()
+            .and_then(|i| {
+                i.data
+                    .as_ref()
                     .filter(|d| d.name == "set")
                     .and_then(|d| d.options.as_ref())
                     .map(|o| match o.as_ref() {
                         [ApplicationCommandInteractionDataOption {
                             name: keyName,
                             application_command_option_type: ApplicationCommandType::String,
-                            value: Str(key)
-                        },
-                        ApplicationCommandInteractionDataOption {
+                            value: Str(key),
+                        }, ApplicationCommandInteractionDataOption {
                             name: valueName,
                             application_command_option_type: ApplicationCommandType::String,
-                            value: Str(value)
+                            value: Str(value),
                         }] if keyName == "key" && valueName == "value" => {
                             Ok((key.to_string(), value.to_string()))
                         }
-                        _ => Err(InteractionError::InvalidCommand)
-                    }));
+                        _ => Err(InteractionError::InvalidCommand),
+                    })
+            });
 
         let store = context.store.clone();
         Box::pin(async move {
@@ -133,12 +155,13 @@ impl InteractionHandler for SetCommandHandler {
                     match result {
                         Ok(_) => {
                             let message = InteractionCallbackMessage {
-                                content: Some(String::from("Successfully set value for note!"))
+                                content: Some(String::from("Successfully set value for note!")),
                             };
-                            let callback = InteractionCallback::channel_message_with_source(message);
+                            let callback =
+                                InteractionCallback::channel_message_with_source(message);
                             Some(Ok(callback))
                         }
-                        Err(e) => Some(Err(e.into()))
+                        Err(e) => Some(Err(e.into())),
                     }
                 }
                 Some(Err(e)) => Some(Err(e)),
@@ -156,18 +179,18 @@ impl InteractionHandler for LsCommandHandler {
     fn handle(&self, interaction: &Interaction, context: &Self::Context) -> Self::Future {
         let args = Some(interaction)
             .filter(|i| i.interaction_type == ApplicationCommand)
-            .and_then(|i|
-                i.data.as_ref()
+            .and_then(|i| {
+                i.data
+                    .as_ref()
                     .filter(|d| {
                         debug!("Command name: {}", d.name);
                         d.name == "ls"
                     })
                     .map(|d| match d.options.as_ref() {
-                        None => {
-                            Ok(())
-                        }
-                        _ => Err(InteractionError::InvalidCommand)
-                    }));
+                        None => Ok(()),
+                        _ => Err(InteractionError::InvalidCommand),
+                    })
+            });
 
         let store = context.store.clone();
         Box::pin(async move {
@@ -176,17 +199,19 @@ impl InteractionHandler for LsCommandHandler {
                     let result = store.list().await;
                     match result {
                         Ok(entries) => {
-                            let message_text = entries.iter()
-                                .map(|s| { format!("| {s}") })
+                            let message_text = entries
+                                .iter()
+                                .map(|s| format!("| {s}"))
                                 .collect::<Vec<String>>()
                                 .join("\n");
                             let message = InteractionCallbackMessage {
-                                content: Some(message_text)
+                                content: Some(message_text),
                             };
-                            let callback = InteractionCallback::channel_message_with_source(message);
+                            let callback =
+                                InteractionCallback::channel_message_with_source(message);
                             Some(Ok(callback))
                         }
-                        Err(e) => Some(Err(e.into()))
+                        Err(e) => Some(Err(e.into())),
                     }
                 }
                 Some(Err(e)) => Some(Err(e)),
@@ -204,18 +229,20 @@ impl InteractionHandler for GetCommandHandler {
     fn handle(&self, interaction: &Interaction, context: &Self::Context) -> Self::Future {
         let args = Some(interaction)
             .filter(|i| i.interaction_type == ApplicationCommand)
-            .and_then(|i|
-                i.data.as_ref()
+            .and_then(|i| {
+                i.data
+                    .as_ref()
                     .filter(|d| d.name == "get")
                     .and_then(|d| d.options.as_ref())
                     .map(|o| match o.as_ref() {
                         [ApplicationCommandInteractionDataOption {
                             name: keyName,
                             application_command_option_type: ApplicationCommandType::String,
-                            value: Str(key)
+                            value: Str(key),
                         }] if keyName == "key" => Ok(key.to_string()),
-                        _ => Err(InteractionError::InvalidCommand)
-                    }));
+                        _ => Err(InteractionError::InvalidCommand),
+                    })
+            });
 
         let store = context.store.clone();
         Box::pin(async move {
@@ -225,24 +252,18 @@ impl InteractionHandler for GetCommandHandler {
                     match result {
                         Ok(value) => {
                             let message = InteractionCallbackMessage {
-                                content: Some(format!("Your data: `{value}`"))
+                                content: Some(format!("Your data: `{value}`")),
                             };
-                            let callback = InteractionCallback::channel_message_with_source(message);
+                            let callback =
+                                InteractionCallback::channel_message_with_source(message);
                             Some(Ok(callback))
                         }
-                        Err(e) => Some(Err(e.into()))
+                        Err(e) => Some(Err(e.into())),
                     }
                 }
                 Some(Err(e)) => Some(Err(e)),
                 None => None,
             }
         })
-    }
-}
-
-
-impl From<ListError> for InteractionError {
-    fn from(_: ListError) -> Self {
-        InteractionError::Unexpected
     }
 }

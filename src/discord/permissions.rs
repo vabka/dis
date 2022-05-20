@@ -71,7 +71,7 @@ impl PermissionsProvider for Permissions {
     }
 
     fn allowed_to_kick_members(&self) -> bool {
-        is_flag_set(self.0,     1.into())
+        is_flag_set(self.0, 1.into())
     }
 
     fn allowed_to_ban_members(&self) -> bool {
@@ -239,13 +239,12 @@ impl PermissionsProvider for PermissionsMut {
         self.0
     }
 
-
     fn allowed_to_create_instant_invite(&self) -> bool {
         is_flag_set(self.0, 0.into())
     }
 
     fn allowed_to_kick_members(&self) -> bool {
-        is_flag_set(self.0,     1.into())
+        is_flag_set(self.0, 1.into())
     }
 
     fn allowed_to_ban_members(&self) -> bool {
@@ -406,10 +405,14 @@ impl PermissionsProvider for PermissionsMut {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct PermissionsMut(#[serde(deserialize_with = "serde_aux::deserialize_number_from_string")] Inner);
+pub struct PermissionsMut(
+    #[serde(deserialize_with = "serde_aux::deserialize_number_from_string")] Inner,
+);
 
 impl Default for PermissionsMut {
-    fn default() -> Self { PermissionsMut::new() }
+    fn default() -> Self {
+        PermissionsMut::new()
+    }
 }
 
 #[allow(clippy::useless_conversion)]

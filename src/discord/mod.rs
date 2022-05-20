@@ -54,7 +54,7 @@ impl DiscordBotApiClient {
                         HeaderValue::from_str(
                             format!("DiscordBot ({}, {})", bot_url, bot_version).as_str(),
                         )
-                            .expect("user agent header value")
+                        .expect("user agent header value")
                     };
                     map.append("User-Agent", user_agent_header_value);
                     map

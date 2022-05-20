@@ -1,11 +1,20 @@
-use actix_web::get;
-use actix_web::HttpResponse;
-use actix_web::Responder;
+use actix_web::{HttpResponse, Responder, get, post, web::{Json, Data}};
+use crate::discord::interactions::{Interaction, InteractionCallback};
+use interaction_pipeline::{InteractionPipeline, BotContext, InteractionError};
 
-mod post_interactions;
 pub mod interaction_pipeline;
 
-pub use self::post_interactions::interactions;
+#[post("/interactions")]
+pub async fn interactions(
+    interaction: Json<Interaction>,
+    pipeline: Data<InteractionPipeline<BotContext>>,
+    bot_context: Data<BotContext>,
+) -> Result<Json<InteractionCallback>, InteractionError> {
+    pipeline
+        .handle(interaction.into_inner(), &bot_context)
+        .await
+        .map(Json)
+}
 
 #[get("/tos")]
 pub async fn tos() -> impl Responder {

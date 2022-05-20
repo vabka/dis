@@ -11,11 +11,15 @@ impl Storage {
     pub fn new(path: &str, name: Option<&str>) -> Result<Self, kv::Error> {
         let config = kv::Config::new(path);
         let store = kv::Store::new(config)?;
-        Ok(Self { store, name: name.map(String::from) })
+        Ok(Self {
+            store,
+            name: name.map(String::from),
+        })
     }
 
     fn get_bucket(&self) -> Result<Bucket<&str, String>, kv::Error> {
-        self.store.bucket::<&str, String>(self.name.as_ref().map(String::as_str))
+        self.store
+            .bucket::<&str, String>(self.name.as_ref().map(String::as_str))
     }
 
     pub async fn insert(&self, key: &str, value: &str) -> Result<(), InsertError> {
@@ -75,7 +79,7 @@ impl Storage {
 #[derive(err_derive::Error, Debug)]
 pub enum ListError {
     #[error(display = "Error in kv::")]
-    Kv(kv::Error)
+    Kv(kv::Error),
 }
 
 impl From<kv::Error> for ListError {

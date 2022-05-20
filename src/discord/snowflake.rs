@@ -16,8 +16,8 @@ impl Display for Snowflake {
 
 impl Serialize for Snowflake {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-        where
-            S: serde::Serializer,
+    where
+        S: serde::Serializer,
     {
         serializer.serialize_str(self.0.to_string().as_str())
     }

@@ -1,20 +1,21 @@
 #![allow(dead_code)]
 #![warn(unused_imports)]
 
-use std::env;
-use std::sync::{Arc};
-use tokio::sync::{RwLock};
 use actix_web::{middleware, web, App, HttpServer};
 use dotenv::dotenv;
+use std::env;
 
-use crate::discord_authorization::DiscordAuthorization;
-use discord::snowflake::Snowflake;
 use crate::discord::DiscordBotApiClient;
+use crate::discord_authorization::DiscordAuthorization;
 use crate::domain::declare_commands;
 use crate::domain::store::Storage;
+use discord::snowflake::Snowflake;
 
+use crate::endpoints::interaction_pipeline::{
+    BotContext, EchoCommandHandler, GetCommandHandler, InteractionPipeline, LsCommandHandler,
+    PingInteractionHandler, SetCommandHandler,
+};
 use crate::endpoints::{interactions, privacy, tos};
-use crate::endpoints::interaction_pipeline::{BotContext, EchoCommandHandler, GetCommandHandler, InteractionPipeline, LsCommandHandler, PingInteractionHandler, SetCommandHandler};
 
 mod discord;
 mod discord_authorization;
@@ -30,7 +31,13 @@ async fn main() -> anyhow::Result<()> {
     let public_key = config.public_key;
     let store = Storage::new(config.storage_path.as_str(), None)?;
 
-    let client = DiscordBotApiClient::new(config.token.as_str(), config.base_url.as_str(), config.bot_url.as_str(), "0.1", config.app_id);
+    let client = DiscordBotApiClient::new(
+        config.token.as_str(),
+        config.base_url.as_str(),
+        config.bot_url.as_str(),
+        "0.1",
+        config.app_id,
+    );
     // declare_commands(&client).await?;
     let bot_context = BotContext::new(store, client);
     HttpServer::new(move || {
@@ -52,9 +59,9 @@ async fn main() -> anyhow::Result<()> {
                     .service(interactions),
             )
     })
-        .bind(config.socket_addr)?
-        .run()
-        .await?;
+    .bind(config.socket_addr)?
+    .run()
+    .await?;
     Ok(())
 }
 
