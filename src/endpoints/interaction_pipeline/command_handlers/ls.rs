@@ -1,9 +1,11 @@
-use crate::BotContext;
 use crate::discord::interactions::InteractionCallback;
 use crate::discord::interactions::InteractionCallbackMessage;
 use crate::discord::interactions::InteractionData;
-use crate::endpoints::interaction_pipeline::{Task};
-use crate::endpoints::interaction_pipeline::command_handlers::{CommandHandler, CommandHandlerResult};
+use crate::endpoints::interaction_pipeline::command_handlers::{
+    CommandHandler, CommandHandlerResult,
+};
+use crate::endpoints::interaction_pipeline::Task;
+use crate::BotContext;
 
 pub struct LsCommandHandler;
 
@@ -19,7 +21,7 @@ impl CommandHandler for LsCommandHandler {
     fn parse_args(interaction_data: &InteractionData) -> Option<Self::Args> {
         match interaction_data.options.as_deref() {
             Some([]) | None => Some(()),
-            _ => None
+            _ => None,
         }
     }
 
@@ -35,8 +37,7 @@ impl CommandHandler for LsCommandHandler {
             let message = InteractionCallbackMessage {
                 content: Some(message_text),
             };
-            let callback =
-                InteractionCallback::channel_message_with_source(message);
+            let callback = InteractionCallback::channel_message_with_source(message);
             Ok(callback)
         })
     }

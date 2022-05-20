@@ -1,9 +1,10 @@
-use std::future::ready;
-use crate::BotContext;
-use crate::discord::interactions::{Interaction, InteractionType};
+use crate::discord::interactions::{Interaction, InteractionCallback, InteractionType};
 use crate::endpoints::interaction_pipeline::{InteractionHandler, InteractionHandlerResult, Task};
+use crate::BotContext;
+use std::future::ready;
 
 pub struct PingInteractionHandler;
+
 impl InteractionHandler for PingInteractionHandler {
     type Future = Task<InteractionHandlerResult>;
     type Context = BotContext;

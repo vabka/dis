@@ -1,15 +1,21 @@
-mod error;
 mod command_handlers;
+mod error;
 mod ping;
+
 use crate::discord::interactions::Interaction;
 use crate::discord::interactions::InteractionCallback;
 
-
 use crate::{DiscordBotApiClient, Storage};
-use futures_util::future::{LocalBoxFuture};
-use std::future::{Future};
+use futures_util::future::LocalBoxFuture;
+use std::future::Future;
 
+pub use command_handlers::EchoCommandHandler;
+pub use command_handlers::GetCommandHandler;
+pub use command_handlers::LsCommandHandler;
+pub use command_handlers::SetCommandHandler;
 pub use error::InteractionError;
+pub use ping::PingInteractionHandler;
+
 pub type InteractionHandlerResult = Option<Result<InteractionCallback, InteractionError>>;
 
 pub trait InteractionHandler {
@@ -61,4 +67,3 @@ impl<TContext> InteractionPipeline<TContext> {
         Err(InteractionError::NoHandlerFound)
     }
 }
-

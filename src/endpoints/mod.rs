@@ -1,6 +1,10 @@
-use actix_web::{HttpResponse, Responder, get, post, web::{Json, Data}};
 use crate::discord::interactions::{Interaction, InteractionCallback};
-use interaction_pipeline::{InteractionPipeline, BotContext, InteractionError};
+use actix_web::{
+    get, post,
+    web::{Data, Json},
+    HttpResponse, Responder,
+};
+use interaction_pipeline::{BotContext, InteractionError, InteractionPipeline};
 
 pub mod interaction_pipeline;
 

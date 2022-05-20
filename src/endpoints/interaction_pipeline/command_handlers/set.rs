@@ -1,18 +1,20 @@
-use crate::BotContext;
-use crate::discord::application_command::{ApplicationCommandType};
 use crate::discord::application_command::ApplicationCommandOptionValue::Str;
+use crate::discord::application_command::ApplicationCommandType;
 use crate::discord::interactions::ApplicationCommandInteractionDataOption;
 use crate::discord::interactions::Interaction;
 use crate::discord::interactions::InteractionCallback;
 use crate::discord::interactions::InteractionCallbackMessage;
 use crate::discord::interactions::InteractionData;
 use crate::discord::interactions::InteractionType;
-use crate::endpoints::interaction_pipeline::{Task};
-use crate::endpoints::interaction_pipeline::command_handlers::{CommandHandler, CommandHandlerResult};
+use crate::endpoints::interaction_pipeline::command_handlers::{
+    CommandHandler, CommandHandlerResult,
+};
+use crate::endpoints::interaction_pipeline::Task;
+use crate::BotContext;
 
 pub struct SetCommandHandler;
 
-struct SetCommandArgs {
+pub struct SetCommandArgs {
     key: String,
     value: String,
 }
@@ -27,8 +29,8 @@ impl CommandHandler for SetCommandHandler {
     }
 
     fn parse_args(interaction_data: &InteractionData) -> Option<Self::Args> {
-        interaction_data.options.and_then(|o|
-            match o.as_ref() {
+        interaction_data.options.as_ref()
+            .and_then(|o| match o.as_ref() {
                 [ApplicationCommandInteractionDataOption {
                     name: key_name,
                     application_command_option_type: ApplicationCommandType::String,
@@ -37,10 +39,11 @@ impl CommandHandler for SetCommandHandler {
                     name: value_name,
                     application_command_option_type: ApplicationCommandType::String,
                     value: Str(value),
-                }] if key_name == "key" && value_name == "value" => {
-                    Some(SetCommandArgs { key: key.to_string(), value: value.to_string() })
-                }
-                _ => None
+                }] if key_name == "key" && value_name == "value" => Some(SetCommandArgs {
+                    key: key.to_string(),
+                    value: value.to_string(),
+                }),
+                _ => None,
             })
     }
 
@@ -52,8 +55,7 @@ impl CommandHandler for SetCommandHandler {
             let message = InteractionCallbackMessage {
                 content: Some(String::from("Successfully set value for note!")),
             };
-            let callback =
-                InteractionCallback::channel_message_with_source(message);
+            let callback = InteractionCallback::channel_message_with_source(message);
             Ok(callback)
         })
     }

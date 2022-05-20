@@ -1,9 +1,9 @@
-use actix_web::{HttpResponse, ResponseError};
-use actix_web::body::BoxBody;
-use actix_web::http::StatusCode;
-use log::{debug, error};
 use crate::discord::interactions::{InteractionCallback, InteractionCallbackMessage};
 use crate::domain::store::{ListError, ReadError, UpsertError};
+use actix_web::body::BoxBody;
+use actix_web::http::StatusCode;
+use actix_web::{HttpResponse, ResponseError};
+use log::{debug, error};
 
 #[derive(Debug, err_derive::Error)]
 pub enum InteractionError {

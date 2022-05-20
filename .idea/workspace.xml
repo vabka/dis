@@ -12,17 +12,18 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="552f035a-7359-4b84-b25c-20b57e500a74" name="Changes" comment="Some cleanup">
-      <change afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/echo.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/get.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/ls.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/mod.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/set.rs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/ping.rs" afterDir="false" />
+    <list default="true" id="552f035a-7359-4b84-b25c-20b57e500a74" name="Changes" comment="Refactoring in command handlers">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/domain/store.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/domain/store.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/echo.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/echo.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/get.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/get.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/ls.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/ls.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/set.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/set.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/error.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/error.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/ping.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/ping.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/endpoints/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/mod.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -238,7 +239,7 @@
       <workItem from="1652801648591" duration="22713000" />
       <workItem from="1653071802437" duration="706000" />
       <workItem from="1653078164836" duration="6012000" />
-      <workItem from="1653084797648" duration="3786000" />
+      <workItem from="1653084797648" duration="4126000" />
     </task>
     <task id="LOCAL-00001" summary="Refactoring in command dispatch">
       <created>1652563357302</created>
@@ -324,7 +325,14 @@
       <option name="project" value="LOCAL" />
       <updated>1653082649627</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="Refactoring in command handlers">
+      <created>1653088639548</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1653088639548</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -378,7 +386,8 @@
     <MESSAGE value="Implement /echo in new style" />
     <MESSAGE value="Finish implementing basic commands" />
     <MESSAGE value="Some cleanup" />
-    <option name="LAST_COMMIT_MESSAGE" value="Some cleanup" />
+    <MESSAGE value="Refactoring in command handlers" />
+    <option name="LAST_COMMIT_MESSAGE" value="Refactoring in command handlers" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

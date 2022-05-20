@@ -1,5 +1,4 @@
-use kv::{Bucket, Error, Store, Config};
-
+use kv::{Bucket, Config, Error, Store};
 
 #[derive(Clone)]
 pub struct Storage {
@@ -18,8 +17,7 @@ impl Storage {
     }
 
     fn get_bucket(&self) -> Result<Bucket<&str, String>, Error> {
-        self.store
-            .bucket::<&str, String>(self.name.as_deref())
+        self.store.bucket::<&str, String>(self.name.as_deref())
     }
 
     pub async fn insert(&self, key: &str, value: &str) -> Result<(), InsertError> {
