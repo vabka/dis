@@ -7,7 +7,6 @@ use std::env;
 
 use crate::discord::DiscordBotApiClient;
 use crate::discord_authorization::DiscordAuthorization;
-use crate::domain::declare_commands;
 use crate::domain::store::Storage;
 use discord::snowflake::Snowflake;
 

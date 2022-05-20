@@ -1,5 +1,5 @@
-use kv::{Bucket, Error, Store};
-use log::debug;
+use kv::{Bucket, Error, Store, Config};
+
 
 #[derive(Clone)]
 pub struct Storage {
@@ -8,18 +8,18 @@ pub struct Storage {
 }
 
 impl Storage {
-    pub fn new(path: &str, name: Option<&str>) -> Result<Self, kv::Error> {
-        let config = kv::Config::new(path);
-        let store = kv::Store::new(config)?;
+    pub fn new(path: &str, name: Option<&str>) -> Result<Self, Error> {
+        let config = Config::new(path);
+        let store = Store::new(config)?;
         Ok(Self {
             store,
             name: name.map(String::from),
         })
     }
 
-    fn get_bucket(&self) -> Result<Bucket<&str, String>, kv::Error> {
+    fn get_bucket(&self) -> Result<Bucket<&str, String>, Error> {
         self.store
-            .bucket::<&str, String>(self.name.as_ref().map(String::as_str))
+            .bucket::<&str, String>(self.name.as_deref())
     }
 
     pub async fn insert(&self, key: &str, value: &str) -> Result<(), InsertError> {
@@ -136,8 +136,8 @@ pub enum DeleteError {
     Kv(kv::Error),
 }
 
-impl From<kv::Error> for DeleteError {
-    fn from(e: kv::Error) -> Self {
+impl From<Error> for DeleteError {
+    fn from(e: Error) -> Self {
         DeleteError::Kv(e)
     }
 }
