@@ -1,3 +1,4 @@
+use log::debug;
 use crate::discord::application_command::ApplicationCommandOptionValue::Str;
 use crate::discord::application_command::ApplicationCommandType;
 use crate::discord::interactions::ApplicationCommandInteractionDataOption;

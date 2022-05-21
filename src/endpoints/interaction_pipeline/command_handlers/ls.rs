@@ -1,3 +1,4 @@
+use log::debug;
 use crate::discord::interactions::InteractionCallback;
 use crate::discord::interactions::InteractionCallbackMessage;
 use crate::discord::interactions::InteractionData;

@@ -10,6 +10,7 @@ use crate::endpoints::interaction_pipeline::command_handlers::{
 use crate::endpoints::interaction_pipeline::Task;
 use crate::BotContext;
 use std::future::ready;
+use log::debug;
 
 pub struct EchoCommandHandler;
 

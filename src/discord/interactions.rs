@@ -5,7 +5,7 @@ use crate::Snowflake;
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 pub struct InteractionCallback {
     #[serde(rename = "type")]
     pub interaction_response_type: InteractionResponseType,
@@ -13,13 +13,13 @@ pub struct InteractionCallback {
     pub data: Option<InteractionCallbackData>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 #[serde(untagged)]
 pub enum InteractionCallbackData {
     Message(InteractionCallbackMessage),
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 pub struct InteractionCallbackMessage {
     // pub tts: Option<bool>,
     pub content: Option<String>,
@@ -52,7 +52,7 @@ impl InteractionCallback {
     }
 }
 
-#[derive(Serialize_repr)]
+#[derive(Serialize_repr, Debug)]
 #[repr(u8)]
 pub enum InteractionResponseType {
     Pong = 1,

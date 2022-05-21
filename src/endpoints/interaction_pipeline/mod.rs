@@ -8,6 +8,7 @@ use crate::discord::interactions::InteractionCallback;
 use crate::{DiscordBotApiClient, Storage};
 use futures_util::future::LocalBoxFuture;
 use std::future::Future;
+use log::debug;
 
 pub use command_handlers::EchoCommandHandler;
 pub use command_handlers::GetCommandHandler;
