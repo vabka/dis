@@ -1,11 +1,11 @@
 use crate::discord::application_command::ApplicationCommandOptionValue::Str;
 use crate::discord::application_command::ApplicationCommandType;
 use crate::discord::interactions::ApplicationCommandInteractionDataOption;
-use crate::discord::interactions::Interaction;
+
 use crate::discord::interactions::InteractionCallback;
 use crate::discord::interactions::InteractionCallbackMessage;
 use crate::discord::interactions::InteractionData;
-use crate::discord::interactions::InteractionType;
+
 use crate::endpoints::interaction_pipeline::command_handlers::{
     CommandHandler, CommandHandlerResult,
 };

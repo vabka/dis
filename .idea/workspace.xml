@@ -12,9 +12,9 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="552f035a-7359-4b84-b25c-20b57e500a74" name="Changes" comment="Fix compilation">
+    <list default="true" id="552f035a-7359-4b84-b25c-20b57e500a74" name="Changes" comment="Apply clippy suggestion">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/set.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/set.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,6 +52,9 @@
       </MavenGeneralSettings>
     </option>
   </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="ProjectErrors" />
+  </component>
   <component name="ProjectId" id="28qcv5FJA3Mp6flPxv1OgqZP5zf" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <OptionsSetting value="false" id="Update" />
@@ -81,6 +84,7 @@
     &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;language.rust.cargo.check&quot;
   }
 }</component>
@@ -230,7 +234,9 @@
       <workItem from="1652801648591" duration="22713000" />
       <workItem from="1653071802437" duration="706000" />
       <workItem from="1653078164836" duration="6012000" />
-      <workItem from="1653084797648" duration="4209000" />
+      <workItem from="1653084797648" duration="4537000" />
+      <workItem from="1653089418846" duration="1000" />
+      <workItem from="1653142925933" duration="3000" />
     </task>
     <task id="LOCAL-00001" summary="Refactoring in command dispatch">
       <created>1652563357302</created>
@@ -330,7 +336,14 @@
       <option name="project" value="LOCAL" />
       <updated>1653088966782</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Apply clippy suggestion">
+      <created>1653089181972</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1653089181972</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -386,7 +399,8 @@
     <MESSAGE value="Some cleanup" />
     <MESSAGE value="Refactoring in command handlers" />
     <MESSAGE value="Fix compilation" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fix compilation" />
+    <MESSAGE value="Apply clippy suggestion" />
+    <option name="LAST_COMMIT_MESSAGE" value="Apply clippy suggestion" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
