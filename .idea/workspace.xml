@@ -12,15 +12,28 @@
     <cargoProject FILE="$PROJECT_DIR$/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="552f035a-7359-4b84-b25c-20b57e500a74" name="Changes" comment="cleanup">
+    <list default="true" id="552f035a-7359-4b84-b25c-20b57e500a74" name="Changes" comment="Fix">
+      <change afterPath="$PROJECT_DIR$/src/configuration.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/discord/gateway/mod.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/discord/interaction/mod.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/discord/locale.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/discord/rest/mod.rs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/discord/voice/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/discord/interactions.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/discord/interactions.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/discord/application_command.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/discord/rest/application_command.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/discord/interactions.rs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/discord/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/discord/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/domain/commands.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/domain/commands.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/echo.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/echo.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/get.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/get.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/ls.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/ls.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/mod.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/set.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/set.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/error.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/error.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/ping.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/interaction_pipeline/ping.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/endpoints/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/endpoints/mod.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,6 +109,7 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\workspace\dis\src\discord\rest" />
       <recent name="C:\workspace\dis\src\endpoints\interaction_pipeline\command_handlers" />
       <recent name="\\wsl$\Ubuntu\home\vabka\repos\disbuster\src\discord" />
     </key>
@@ -242,7 +256,8 @@
       <workItem from="1653078164836" duration="6012000" />
       <workItem from="1653084797648" duration="4537000" />
       <workItem from="1653089418846" duration="1000" />
-      <workItem from="1653142925933" duration="889000" />
+      <workItem from="1653142925933" duration="1627000" />
+      <workItem from="1653155028533" duration="4818000" />
     </task>
     <task id="LOCAL-00001" summary="Refactoring in command dispatch">
       <created>1652563357302</created>
@@ -356,7 +371,14 @@
       <option name="project" value="LOCAL" />
       <updated>1653142950005</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Fix">
+      <created>1653143854572</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1653143854572</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -413,25 +435,21 @@
     <MESSAGE value="Fix compilation" />
     <MESSAGE value="Apply clippy suggestion" />
     <MESSAGE value="cleanup" />
-    <option name="LAST_COMMIT_MESSAGE" value="cleanup" />
+    <MESSAGE value="Fix" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/get.rs</url>
-          <line>25</line>
+          <line>21</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/get.rs</url>
-          <line>37</line>
+          <line>33</line>
           <option name="timeStamp" value="2" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/endpoints/interaction_pipeline/command_handlers/mod.rs</url>
-          <line>44</line>
-          <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

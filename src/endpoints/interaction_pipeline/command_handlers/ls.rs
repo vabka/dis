@@ -1,12 +1,9 @@
-use log::debug;
-use crate::discord::interactions::InteractionCallback;
-use crate::discord::interactions::InteractionCallbackMessage;
-use crate::discord::interactions::InteractionData;
 use crate::endpoints::interaction_pipeline::command_handlers::{
     CommandHandler, CommandHandlerResult,
 };
 use crate::endpoints::interaction_pipeline::Task;
 use crate::BotContext;
+use crate::discord::interaction::{InteractionCallback, InteractionCallbackMessage, InteractionData};
 
 pub struct LsCommandHandler;
 

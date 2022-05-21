@@ -2,13 +2,10 @@ mod command_handlers;
 mod error;
 mod ping;
 
-use crate::discord::interactions::Interaction;
-use crate::discord::interactions::InteractionCallback;
 
-use crate::{DiscordBotApiClient, Storage};
+use crate::{Storage};
 use futures_util::future::LocalBoxFuture;
 use std::future::Future;
-use log::debug;
 
 pub use command_handlers::EchoCommandHandler;
 pub use command_handlers::GetCommandHandler;
@@ -16,11 +13,13 @@ pub use command_handlers::LsCommandHandler;
 pub use command_handlers::SetCommandHandler;
 pub use error::InteractionError;
 pub use ping::PingInteractionHandler;
+use crate::discord::interaction::{Interaction, InteractionCallback};
+use crate::discord::rest::DiscordBotApiClient;
 
 pub type InteractionHandlerResult = Option<Result<InteractionCallback, InteractionError>>;
 
 pub trait InteractionHandler {
-    type Future: Future<Output = InteractionHandlerResult>;
+    type Future: Future<Output=InteractionHandlerResult>;
     type Context;
     fn handle(&self, interaction: &Interaction, context: &Self::Context) -> Self::Future;
 }
@@ -41,7 +40,7 @@ impl BotContext {
 
 pub struct InteractionPipeline<TContext> {
     handlers: Vec<
-        Box<dyn InteractionHandler<Future = Task<InteractionHandlerResult>, Context = TContext>>,
+        Box<dyn InteractionHandler<Future=Task<InteractionHandlerResult>, Context=TContext>>,
     >,
 }
 
@@ -49,7 +48,7 @@ impl<TContext> InteractionPipeline<TContext> {
     pub fn new(
         handlers: Vec<
             Box<
-                dyn InteractionHandler<Future = Task<InteractionHandlerResult>, Context = TContext>,
+                dyn InteractionHandler<Future=Task<InteractionHandlerResult>, Context=TContext>,
             >,
         >,
     ) -> Self {

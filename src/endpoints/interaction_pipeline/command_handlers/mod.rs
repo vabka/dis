@@ -1,6 +1,3 @@
-use crate::discord::interactions::{
-    Interaction, InteractionCallback, InteractionData, InteractionType,
-};
 use crate::endpoints::interaction_pipeline::{
     InteractionError, InteractionHandler, InteractionHandlerResult, Task,
 };
@@ -16,6 +13,7 @@ pub use echo::EchoCommandHandler;
 pub use get::GetCommandHandler;
 pub use ls::LsCommandHandler;
 pub use set::SetCommandHandler;
+use crate::discord::interaction::{Interaction, InteractionCallback, InteractionData, InteractionType};
 
 type CommandHandlerResult = Result<InteractionCallback, InteractionError>;
 

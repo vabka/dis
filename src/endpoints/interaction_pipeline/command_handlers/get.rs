@@ -1,15 +1,11 @@
-use log::debug;
-use crate::discord::application_command::ApplicationCommandOptionValue::Str;
-use crate::discord::application_command::ApplicationCommandType;
-use crate::discord::interactions::ApplicationCommandInteractionDataOption;
-use crate::discord::interactions::InteractionCallback;
-use crate::discord::interactions::InteractionCallbackMessage;
-use crate::discord::interactions::InteractionData;
+use crate::discord::rest::application_command::ApplicationCommandOptionValue::Str;
+use crate::discord::rest::application_command::ApplicationCommandType;
 use crate::endpoints::interaction_pipeline::command_handlers::{
     CommandHandler, CommandHandlerResult,
 };
 use crate::endpoints::interaction_pipeline::Task;
 use crate::BotContext;
+use crate::discord::interaction::{ApplicationCommandInteractionDataOption, InteractionCallback, InteractionCallbackMessage, InteractionData};
 
 pub struct GetCommandHandler;
 

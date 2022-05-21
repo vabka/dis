@@ -1,7 +1,7 @@
-use crate::discord::application_command::{
-    ApplicationCommand, ApplicationCommandOption, ApplicationCommandOptionBuilder,
+use crate::discord::rest::application_command::{
+    ApplicationCommand, ApplicationCommandOption,
 };
-use crate::discord::DiscordBotApiClient;
+use crate::discord::rest::DiscordBotApiClient;
 
 pub async fn declare_commands(client: &DiscordBotApiClient) -> anyhow::Result<()> {
     let set = ApplicationCommand::build_for_application("set", client.app_id())

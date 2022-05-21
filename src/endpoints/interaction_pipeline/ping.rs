@@ -1,7 +1,7 @@
-use crate::discord::interactions::{Interaction, InteractionCallback, InteractionType};
 use crate::endpoints::interaction_pipeline::{InteractionHandler, InteractionHandlerResult, Task};
 use crate::BotContext;
 use std::future::ready;
+use crate::discord::interaction::{Interaction, InteractionCallback, InteractionType};
 
 pub struct PingInteractionHandler;
 

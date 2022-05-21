@@ -1,9 +1,11 @@
-use crate::discord::application_command::{
-    ApplicationCommandOptionValue, ApplicationCommandType, Locale,
+use crate::discord::rest::application_command::{
+    ApplicationCommandOptionValue,
+    ApplicationCommandType,
 };
 use crate::Snowflake;
 use serde::{Deserialize, Serialize};
 use serde_repr::{Deserialize_repr, Serialize_repr};
+use crate::discord::Locale;
 
 #[derive(Serialize, Debug)]
 pub struct InteractionCallback {
