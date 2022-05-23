@@ -120,7 +120,7 @@ pub struct MessageComponent {}
 #[derive(Deserialize, Debug)]
 pub struct SelectOptionValue {}
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct ApplicationCommandInteractionDataOption {
     pub name: String,
     #[serde(rename = "type")]
