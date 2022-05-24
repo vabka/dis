@@ -1,16 +1,15 @@
-mod command_handlers;
 mod error;
 mod ping;
 
 
-use crate::{Storage};
+use crate::Storage;
 use futures_util::future::LocalBoxFuture;
 use std::future::Future;
 
-pub use command_handlers::EchoCommandHandler;
-pub use command_handlers::GetCommandHandler;
-pub use command_handlers::LsCommandHandler;
-pub use command_handlers::SetCommandHandler;
+pub use crate::domain::command_handlers::EchoCommandHandler;
+pub use crate::domain::command_handlers::GetCommandHandler;
+pub use crate::domain::command_handlers::LsCommandHandler;
+pub use crate::domain::command_handlers::SetCommandHandler;
 pub use error::InteractionError;
 pub use ping::PingInteractionHandler;
 use crate::discord::interaction::{Interaction, InteractionCallback};
@@ -25,18 +24,6 @@ pub trait InteractionHandler {
 }
 
 pub type Task<T> = LocalBoxFuture<'static, T>;
-
-#[derive(Clone)]
-pub struct BotContext {
-    store: Storage,
-    api_client: DiscordBotApiClient,
-}
-
-impl BotContext {
-    pub fn new(store: Storage, api_client: DiscordBotApiClient) -> Self {
-        Self { store, api_client }
-    }
-}
 
 pub struct InteractionPipeline<TContext> {
     handlers: Vec<

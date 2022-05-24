@@ -1,12 +1,13 @@
 use crate::discord::rest::application_command::ApplicationCommandOptionValue::Str;
 use crate::discord::rest::application_command::ApplicationCommandType;
-use crate::endpoints::interaction_pipeline::command_handlers::{
+use crate::domain::command_handlers::{
     CommandHandler, CommandHandlerResult,
 };
-use crate::endpoints::interaction_pipeline::Task;
+use crate::domain::interaction_pipeline::Task;
 use crate::BotContext;
 use std::future::ready;
 use crate::discord::interaction::{ApplicationCommandInteractionDataOption, InteractionCallback, InteractionCallbackMessage, InteractionData};
+use crate::domain::bot::BotContext;
 
 pub struct EchoCommandHandler;
 
@@ -45,7 +46,7 @@ mod tests {
     use crate::discord::interaction::{ApplicationCommandInteractionDataOption, InteractionData};
     use crate::discord::rest::application_command::{ApplicationCommandOptionValue, ApplicationCommandType};
     use crate::EchoCommandHandler;
-    use crate::endpoints::interaction_pipeline::command_handlers::CommandHandler;
+    use crate::domain::command_handlers::CommandHandler;
 
     #[test]
     fn echo_name() {

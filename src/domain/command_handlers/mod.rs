@@ -1,4 +1,4 @@
-use crate::endpoints::interaction_pipeline::{
+use crate::domain::interaction_pipeline::{
     InteractionError, InteractionHandler, InteractionHandlerResult, Task,
 };
 use futures_util::FutureExt;

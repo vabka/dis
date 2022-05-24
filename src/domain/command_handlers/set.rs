@@ -1,21 +1,28 @@
 use crate::discord::rest::application_command::ApplicationCommandOptionValue::Str;
 use crate::discord::rest::application_command::ApplicationCommandType;
-use crate::endpoints::interaction_pipeline::command_handlers::{
+
+use crate::domain::command_handlers::{
     CommandHandler, CommandHandlerResult,
 };
-use crate::endpoints::interaction_pipeline::Task;
+use crate::domain::interaction_pipeline::Task;
 use crate::BotContext;
 use crate::discord::interaction::{ApplicationCommandInteractionDataOption, InteractionCallback, InteractionCallbackMessage, InteractionData};
+use crate::domain::bot::BotContext;
 
-pub struct GetCommandHandler;
+pub struct SetCommandHandler;
 
-impl CommandHandler for GetCommandHandler {
-    type Args = String;
+pub struct SetCommandArgs {
+    key: String,
+    value: String,
+}
+
+impl CommandHandler for SetCommandHandler {
+    type Args = SetCommandArgs;
     type Context = BotContext;
     type Future = Task<CommandHandlerResult>;
 
     fn name() -> &'static str {
-        "get"
+        "set"
     }
 
     fn parse_args(interaction_data: &InteractionData) -> Option<Self::Args> {
@@ -25,17 +32,25 @@ impl CommandHandler for GetCommandHandler {
                     name: key_name,
                     application_command_option_type: ApplicationCommandType::String,
                     value: Str(key),
-                }] if key_name == "key" => Some(key.to_string()),
+                }, ApplicationCommandInteractionDataOption {
+                    name: value_name,
+                    application_command_option_type: ApplicationCommandType::String,
+                    value: Str(value),
+                }] if key_name == "key" && value_name == "value" => Some(SetCommandArgs {
+                    key: key.to_string(),
+                    value: value.to_string(),
+                }),
                 _ => None,
             })
     }
 
     fn handle(&self, args: Self::Args, context: &Self::Context) -> Self::Future {
-        let store = context.store.clone();
+        let store = context.get_store().clone();
         Box::pin(async move {
-            let value = store.read(args.as_str()).await?;
+            let Self::Args { key, value } = args;
+            store.upsert(key.as_str(), value.as_str()).await?;
             let message = InteractionCallbackMessage {
-                content: Some(format!("Your data: `{value}`")),
+                content: Some(String::from("Successfully set value for note!")),
             };
             let callback = InteractionCallback::channel_message_with_source(message);
             Ok(callback)

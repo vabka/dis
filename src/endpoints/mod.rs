@@ -1,12 +1,11 @@
 use actix_web::{
-    get, post,
-    web::{Data, Json},
-    HttpResponse, Responder,
+    get, HttpResponse,
+    post,
+    Responder, web::{Data, Json},
 };
-use interaction_pipeline::{BotContext, InteractionError, InteractionPipeline};
+use crate::domain::interaction_pipeline::{InteractionError, InteractionPipeline};
 use crate::discord::interaction::{Interaction, InteractionCallback};
-
-pub mod interaction_pipeline;
+use crate::domain::bot::BotContext;
 
 #[post("/interactions")]
 pub async fn interactions(

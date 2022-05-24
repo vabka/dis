@@ -9,7 +9,7 @@ use crate::domain::store::Storage;
 use discord::Snowflake;
 use crate::configuration::BotConfig;
 
-use crate::endpoints::interaction_pipeline::{
+use domain::interaction_pipeline::{
     BotContext, EchoCommandHandler, GetCommandHandler, InteractionPipeline, LsCommandHandler,
     PingInteractionHandler, SetCommandHandler,
 };

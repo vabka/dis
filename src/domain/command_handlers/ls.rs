@@ -1,9 +1,10 @@
-use crate::endpoints::interaction_pipeline::command_handlers::{
+use crate::domain::command_handlers::{
     CommandHandler, CommandHandlerResult,
 };
-use crate::endpoints::interaction_pipeline::Task;
+use crate::domain::interaction_pipeline::Task;
 use crate::BotContext;
 use crate::discord::interaction::{InteractionCallback, InteractionCallbackMessage, InteractionData};
+use crate::domain::bot::BotContext;
 
 pub struct LsCommandHandler;
 
@@ -24,7 +25,7 @@ impl CommandHandler for LsCommandHandler {
     }
 
     fn handle(&self, _: Self::Args, context: &Self::Context) -> Self::Future {
-        let store = context.store.clone();
+        let store = context.get_store().clone();
         Box::pin(async move {
             let entries = store.list().await?;
             let message_text = entries
