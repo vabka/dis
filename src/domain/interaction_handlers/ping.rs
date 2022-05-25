@@ -1,16 +1,13 @@
-use crate::domain::interaction_pipeline::{InteractionHandler, InteractionHandlerResult, Task};
-use crate::BotContext;
+use crate::domain::interaction_pipeline::{NoContextInteractionHandler, InteractionHandlerResult, Task};
 use std::future::ready;
 use crate::discord::interaction::{Interaction, InteractionCallback, InteractionType};
-use crate::domain::bot::BotContext;
 
 pub struct PingInteractionHandler;
 
-impl InteractionHandler for PingInteractionHandler {
+impl NoContextInteractionHandler for PingInteractionHandler {
     type Future = Task<InteractionHandlerResult>;
-    type Context = BotContext;
 
-    fn handle(&self, interaction: &Interaction, _: &Self::Context) -> Self::Future {
+    fn handle(&self, interaction: &Interaction) -> Self::Future {
         if interaction.interaction_type == InteractionType::Ping {
             Box::pin(ready(Some(Ok(InteractionCallback::pong()))))
         } else {

@@ -1,41 +1,39 @@
 mod error;
-mod ping;
 
 
-use crate::Storage;
 use futures_util::future::LocalBoxFuture;
 use std::future::Future;
 
-pub use crate::domain::command_handlers::EchoCommandHandler;
-pub use crate::domain::command_handlers::GetCommandHandler;
-pub use crate::domain::command_handlers::LsCommandHandler;
-pub use crate::domain::command_handlers::SetCommandHandler;
 pub use error::InteractionError;
-pub use ping::PingInteractionHandler;
 use crate::discord::interaction::{Interaction, InteractionCallback};
-use crate::discord::rest::DiscordBotApiClient;
 
 pub type InteractionHandlerResult = Option<Result<InteractionCallback, InteractionError>>;
 
-pub trait InteractionHandler {
+pub trait InteractionHandler<Context> {
     type Future: Future<Output=InteractionHandlerResult>;
-    type Context;
-    fn handle(&self, interaction: &Interaction, context: &Self::Context) -> Self::Future;
+    fn handle(&self, interaction: &Interaction, context: &Context) -> Self::Future;
 }
-
 pub type Task<T> = LocalBoxFuture<'static, T>;
 
-pub struct InteractionPipeline<TContext> {
-    handlers: Vec<
-        Box<dyn InteractionHandler<Future=Task<InteractionHandlerResult>, Context=TContext>>,
-    >,
+pub trait NoContextInteractionHandler {
+    type Future: Future<Output=InteractionHandlerResult>;
+    fn handle(&self, interaction: &Interaction) -> Self::Future;
 }
+
+impl<T, C> InteractionHandler<C> for T where T: NoContextInteractionHandler {
+    type Future = <Self as NoContextInteractionHandler>::Future;
+
+    fn handle(&self, interaction: &Interaction, _: &C) -> Self::Future {
+        self.handle(interaction)
+    }
+}
+
 
 impl<TContext> InteractionPipeline<TContext> {
     pub fn new(
         handlers: Vec<
             Box<
-                dyn InteractionHandler<Future=Task<InteractionHandlerResult>, Context=TContext>,
+                dyn InteractionHandler<TContext, Future=Task<InteractionHandlerResult>>,
             >,
         >,
     ) -> Self {
@@ -53,4 +51,10 @@ impl<TContext> InteractionPipeline<TContext> {
         }
         Err(InteractionError::NoHandlerFound)
     }
+}
+
+pub struct InteractionPipeline<TContext> {
+    handlers: Vec<
+        Box<dyn InteractionHandler<TContext, Future=Task<InteractionHandlerResult>>>,
+    >,
 }

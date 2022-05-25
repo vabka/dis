@@ -1,19 +1,13 @@
 use crate::discord::rest::application_command::ApplicationCommandOptionValue::Str;
 use crate::discord::rest::application_command::ApplicationCommandType;
-use crate::domain::command_handlers::{
-    CommandHandler, CommandHandlerResult,
-};
+use crate::domain::command_handlers::{CommandHandlerResult, NoContextCommandHandler};
 use crate::domain::interaction_pipeline::Task;
-use crate::BotContext;
 use std::future::ready;
 use crate::discord::interaction::{ApplicationCommandInteractionDataOption, InteractionCallback, InteractionCallbackMessage, InteractionData};
-use crate::domain::bot::BotContext;
-
 pub struct EchoCommandHandler;
 
-impl CommandHandler for EchoCommandHandler {
+impl NoContextCommandHandler for EchoCommandHandler {
     type Args = String;
-    type Context = BotContext;
     type Future = Task<CommandHandlerResult>;
 
     fn name() -> &'static str {
@@ -32,7 +26,7 @@ impl CommandHandler for EchoCommandHandler {
                 _ => None,
             })
     }
-    fn handle(&self, args: Self::Args, _: &Self::Context) -> Self::Future {
+    fn handle(&self, args: Self::Args) -> Self::Future {
         let msg = InteractionCallbackMessage {
             content: Some(args),
         };
@@ -45,8 +39,8 @@ impl CommandHandler for EchoCommandHandler {
 mod tests {
     use crate::discord::interaction::{ApplicationCommandInteractionDataOption, InteractionData};
     use crate::discord::rest::application_command::{ApplicationCommandOptionValue, ApplicationCommandType};
-    use crate::EchoCommandHandler;
-    use crate::domain::command_handlers::CommandHandler;
+    use crate::domain::command_handlers::NoContextCommandHandler;
+    use super::EchoCommandHandler;
 
     #[test]
     fn echo_name() {

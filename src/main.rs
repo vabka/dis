@@ -9,10 +9,9 @@ use crate::domain::store::Storage;
 use discord::Snowflake;
 use crate::configuration::BotConfig;
 
-use domain::interaction_pipeline::{
-    BotContext, EchoCommandHandler, GetCommandHandler, InteractionPipeline, LsCommandHandler,
-    PingInteractionHandler, SetCommandHandler,
-};
+use domain::interaction_pipeline::{InteractionPipeline};
+use domain::interaction_handlers::*;
+use domain::bot::BotContext;
 use crate::endpoints::{interactions, privacy, tos};
 
 mod discord;
@@ -42,12 +41,12 @@ async fn main() -> anyhow::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(bot_context.clone()))
-            .app_data(web::Data::new(InteractionPipeline::new(vec![
+            .app_data(web::Data::new(InteractionPipeline::<BotContext>::new(vec![
                 Box::new(PingInteractionHandler),
-                Box::new(EchoCommandHandler),
-                Box::new(SetCommandHandler),
-                Box::new(LsCommandHandler),
-                Box::new(GetCommandHandler),
+                Box::new(InteractionCommandInteractionHandler::from(EchoCommandHandler)),
+                Box::new(InteractionCommandInteractionHandler::from(SetCommandHandler)),
+                Box::new(InteractionCommandInteractionHandler::from(LsCommandHandler)),
+                Box::new(InteractionCommandInteractionHandler::from(GetCommandHandler)),
             ])))
             .wrap(middleware::Compress::default())
             .service(privacy)

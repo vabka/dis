@@ -11,11 +11,20 @@ impl BotContext {
     pub fn new(store: Storage, api_client: DiscordBotApiClient) -> Self {
         Self { store, api_client }
     }
+}
 
-    pub fn get_store(&self) -> &Storage {
-        &self.store
-    }
-    pub fn get_api_client(&self) -> &DiscordBotApiClient {
+impl Get<DiscordBotApiClient> for BotContext {
+    fn get(&self) -> &DiscordBotApiClient {
         &self.api_client
     }
+}
+
+impl Get<Storage> for BotContext {
+    fn get(&self) -> &Storage {
+        &self.store
+    }
+}
+
+pub trait Get<T> {
+    fn get(&self) -> &T;
 }

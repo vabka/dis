@@ -5,9 +5,9 @@ use crate::domain::command_handlers::{
     CommandHandler, CommandHandlerResult,
 };
 use crate::domain::interaction_pipeline::Task;
-use crate::BotContext;
 use crate::discord::interaction::{ApplicationCommandInteractionDataOption, InteractionCallback, InteractionCallbackMessage, InteractionData};
-use crate::domain::bot::BotContext;
+use crate::domain::bot::{Get};
+use crate::domain::store::Storage;
 
 pub struct SetCommandHandler;
 
@@ -16,9 +16,8 @@ pub struct SetCommandArgs {
     value: String,
 }
 
-impl CommandHandler for SetCommandHandler {
+impl<C: Get<Storage>> CommandHandler<C> for SetCommandHandler {
     type Args = SetCommandArgs;
-    type Context = BotContext;
     type Future = Task<CommandHandlerResult>;
 
     fn name() -> &'static str {
@@ -44,8 +43,8 @@ impl CommandHandler for SetCommandHandler {
             })
     }
 
-    fn handle(&self, args: Self::Args, context: &Self::Context) -> Self::Future {
-        let store = context.get_store().clone();
+    fn handle(&self, args: Self::Args, context: &C) -> Self::Future {
+        let store: Storage = context.get().clone();
         Box::pin(async move {
             let Self::Args { key, value } = args;
             store.upsert(key.as_str(), value.as_str()).await?;
