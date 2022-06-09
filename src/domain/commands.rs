@@ -3,7 +3,7 @@ use crate::discord::rest::application_command::{
 };
 use crate::discord::rest::DiscordBotApiClient;
 
-pub async fn declare_commands(client: &DiscordBotApiClient) -> anyhow::Result<()> {
+pub async fn declare_commands(client: &DiscordBotApiClient) -> Result<(), Box<dyn std::error::Error>> {
     let set = ApplicationCommand::build_for_application("set", client.app_id())
         .with_description("Save new note")
         .with_option(

@@ -5,15 +5,16 @@ use actix_web::http::header::HeaderValue;
 use actix_web::http::{header, StatusCode};
 use actix_web::web::{Bytes, BytesMut};
 use actix_web::{Error, HttpMessage, HttpResponse, ResponseError};
-use async_std::prelude::*;
-use async_std::stream;
 use ed25519_dalek::PublicKey;
+use futures::Stream;
 use futures_util::future::LocalBoxFuture;
+use futures_util::{stream, StreamExt};
 use log::info;
 use signature::Verifier;
 use std::cell::RefCell;
 use std::fmt::{Display, Formatter};
-use std::future::{ready, Ready};
+use std::future;
+use std::future::Ready;
 use std::pin::Pin;
 use std::rc::Rc;
 
@@ -91,7 +92,7 @@ where
                     // RESTORE PAYLOAD
                     let orig_payload = body.slice(timestamp_offset..);
                     let single_part: Result<Bytes, PayloadError> = Ok(orig_payload);
-                    let in_memory_stream = stream::once(single_part);
+                    let in_memory_stream = stream::once(future::ready(single_part));
                     let pinned_stream: Pin<Box<dyn Stream<Item = Result<Bytes, PayloadError>>>> =
                         Box::pin(in_memory_stream);
                     let in_memory_payload: Payload = pinned_stream.into();
@@ -104,7 +105,7 @@ where
                 }
             })
         } else {
-            Box::pin(ready(Err(ServiceError::Unauthorized.into())))
+            Box::pin(future::ready(Err(ServiceError::Unauthorized.into())))
         }
     }
 }
@@ -133,7 +134,7 @@ where
     type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
     fn new_transform(&self, service: S) -> Self::Future {
-        ready(Ok(DiscordAuthorizationMiddleware {
+        future::ready(Ok(DiscordAuthorizationMiddleware {
             service: Rc::new(RefCell::new(service)),
             public_key: self.public_key,
         }))

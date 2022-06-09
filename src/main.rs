@@ -1,28 +1,26 @@
-#![allow(dead_code)]
-#![warn(unused_imports)]
-
 use actix_web::{middleware, web, App, HttpServer};
 use dotenv::dotenv;
+use endpoints::index;
 
+use crate::configuration::BotConfig;
 use crate::discord_authorization::DiscordAuthorization;
 use crate::domain::store::Storage;
 use discord::Snowflake;
-use crate::configuration::BotConfig;
 
-use domain::interaction_pipeline::{InteractionPipeline};
-use domain::interaction_handlers::*;
-use domain::bot::BotContext;
 use crate::endpoints::{interactions, privacy, tos};
+use domain::bot::BotContext;
+use domain::interaction_handlers::*;
+use domain::interaction_pipeline::InteractionPipeline;
 
+mod configuration;
 mod discord;
 mod discord_authorization;
 mod domain;
 mod endpoints;
-mod configuration;
 // mod typed_interaction;
 
 #[actix_web::main]
-async fn main() -> anyhow::Result<()> {
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv()?;
     env_logger::init();
     let config = BotConfig::load_env()?;
@@ -41,24 +39,33 @@ async fn main() -> anyhow::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(bot_context.clone()))
-            .app_data(web::Data::new(InteractionPipeline::<BotContext>::new(vec![
-                Box::new(PingInteractionHandler),
-                Box::new(InteractionCommandInteractionHandler::from(EchoCommandHandler)),
-                Box::new(InteractionCommandInteractionHandler::from(SetCommandHandler)),
-                Box::new(InteractionCommandInteractionHandler::from(LsCommandHandler)),
-                Box::new(InteractionCommandInteractionHandler::from(GetCommandHandler)),
-            ])))
+            .app_data(web::Data::new(InteractionPipeline::<BotContext>::new(
+                vec![
+                    Box::new(PingInteractionHandler),
+                    Box::new(InteractionCommandInteractionHandler::from(
+                        EchoCommandHandler,
+                    )),
+                    Box::new(InteractionCommandInteractionHandler::from(
+                        SetCommandHandler,
+                    )),
+                    Box::new(InteractionCommandInteractionHandler::from(LsCommandHandler)),
+                    Box::new(InteractionCommandInteractionHandler::from(
+                        GetCommandHandler,
+                    )),
+                ],
+            )))
             .wrap(middleware::Compress::default())
             .service(privacy)
             .service(tos)
+            .service(index)
             .service(
                 web::scope("/api")
                     .wrap(DiscordAuthorization::new(public_key))
                     .service(interactions),
             )
     })
-        .bind(config.socket_addr)?
-        .run()
-        .await?;
+    .bind(config.socket_addr)?
+    .run()
+    .await?;
     Ok(())
 }

@@ -47,7 +47,7 @@ impl<C: Get<Storage>> CommandHandler<C> for SetCommandHandler {
         let store: Storage = context.get().clone();
         Box::pin(async move {
             let Self::Args { key, value } = args;
-            store.upsert(key.as_str(), value.as_str()).await?;
+            store.upsert(&key, &value).await?;
             let message = InteractionCallbackMessage {
                 content: Some(String::from("Successfully set value for note!")),
             };

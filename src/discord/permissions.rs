@@ -4,7 +4,7 @@ type Inner = i64;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Permissions(
-    #[serde(deserialize_with = "serde_aux::deserialize_number_from_string")] Inner,
+    #[serde(deserialize_with = "serde_aux::prelude::deserialize_number_from_string")] Inner,
 );
 
 pub trait PermissionsProvider {
@@ -406,7 +406,7 @@ impl PermissionsProvider for PermissionsMut {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct PermissionsMut(
-    #[serde(deserialize_with = "serde_aux::deserialize_number_from_string")] Inner,
+    #[serde(deserialize_with = "serde_aux::prelude::deserialize_number_from_string")] Inner,
 );
 
 impl Default for PermissionsMut {

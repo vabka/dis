@@ -59,20 +59,21 @@ impl DiscordBotApiClient {
         }
     }
 
+    // TODO wrap error
     pub async fn create_application_command(
         &self,
         command: &ApplicationCommand,
-    ) -> anyhow::Result<ApplicationCommand> {
+    ) -> Result<ApplicationCommand, reqwest::Error> {
         let base_url = &self.base_url;
         let app_id = self.app_id;
         let url = format!("{}/v8/applications/{}/commands", base_url, app_id);
-        Ok(self
+        self
             .client
             .post(url)
             .json(command)
             .send()
             .await?
             .json::<ApplicationCommand>()
-            .await?)
+            .await
     }
 }

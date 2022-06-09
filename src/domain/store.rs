@@ -20,46 +20,46 @@ impl Storage {
         self.store.bucket::<&str, String>(self.name.as_deref())
     }
 
-    pub async fn insert(&self, key: &str, value: &str) -> Result<(), InsertError> {
+    pub async fn insert(&self, key: &str, value: &String) -> Result<(), InsertError> {
         let bucket = self.get_bucket()?;
-        if bucket.contains(key)? {
+        if bucket.contains(&key)? {
             return Err(InsertError::ExistingKey);
         }
-        bucket.set(key, value)?;
+        bucket.set(&key, value)?;
         bucket.flush_async().await?;
         Ok(())
     }
 
-    pub async fn update(&self, key: &str, value: &str) -> Result<(), UpdateError> {
+    pub async fn update(&self, key: &str, value: &String) -> Result<(), UpdateError> {
         let bucket = self.get_bucket()?;
-        if !bucket.contains(key)? {
+        if !bucket.contains(&key)? {
             return Err(UpdateError::MissingKey);
         }
-        bucket.set(key, value)?;
+        bucket.set(&key, value)?;
         bucket.flush_async().await?;
         Ok(())
     }
 
-    pub async fn upsert(&self, key: &str, value: &str) -> Result<(), UpsertError> {
+    pub async fn upsert(&self, key: &str, value: &String) -> Result<(), UpsertError> {
         let bucket = self.get_bucket()?;
-        bucket.set(key, value)?;
+        bucket.set(&key, value)?;
         bucket.flush_async().await?;
         Ok(())
     }
 
     pub async fn delete(&self, key: &str) -> Result<(), DeleteError> {
         let bucket = self.get_bucket()?;
-        if !bucket.contains(key)? {
+        if !bucket.contains(&key)? {
             return Err(DeleteError::MissingKey);
         }
-        bucket.remove(key)?;
+        bucket.remove(&key)?;
         bucket.flush_async().await?;
         Ok(())
     }
 
     pub async fn read(&self, key: &str) -> Result<String, ReadError> {
         let bucket = self.get_bucket()?;
-        bucket.get(key)?.ok_or(ReadError::NoData)
+        bucket.get(&key)?.ok_or(ReadError::NoData)
     }
 
     pub async fn list(&self) -> Result<Vec<String>, ListError> {
@@ -74,9 +74,9 @@ impl Storage {
     }
 }
 
-#[derive(err_derive::Error, Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum ListError {
-    #[error(display = "Error in kv::")]
+    #[error("Error in kv::")]
     Kv(kv::Error),
 }
 
@@ -86,11 +86,11 @@ impl From<kv::Error> for ListError {
     }
 }
 
-#[derive(err_derive::Error, Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum InsertError {
-    #[error(display = "Key exists")]
+    #[error("Key exists")]
     ExistingKey,
-    #[error(display = "Error in kv::")]
+    #[error("Error in kv::")]
     Kv(kv::Error),
 }
 
@@ -100,11 +100,11 @@ impl From<kv::Error> for InsertError {
     }
 }
 
-#[derive(err_derive::Error, Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum UpdateError {
-    #[error(display = "Key missing")]
+    #[error("Key missing")]
     MissingKey,
-    #[error(display = "Error in kv::")]
+    #[error("Error in kv::")]
     Kv(kv::Error),
 }
 
@@ -114,9 +114,9 @@ impl From<kv::Error> for UpdateError {
     }
 }
 
-#[derive(err_derive::Error, Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum UpsertError {
-    #[error(display = "Error in kv::")]
+    #[error("Error in kv::")]
     Kv(kv::Error),
 }
 
@@ -126,11 +126,11 @@ impl From<kv::Error> for UpsertError {
     }
 }
 
-#[derive(err_derive::Error, Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum DeleteError {
-    #[error(display = "Key missing")]
+    #[error("Key missing")]
     MissingKey,
-    #[error(display = "Error in kv::")]
+    #[error("Error in kv::")]
     Kv(kv::Error),
 }
 
@@ -140,13 +140,13 @@ impl From<Error> for DeleteError {
     }
 }
 
-#[derive(err_derive::Error, Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum ReadError {
-    #[error(display = "Key missing")]
+    #[error("Key missing")]
     MissingKey,
-    #[error(display = "No data")]
+    #[error("No data")]
     NoData,
-    #[error(display = "Error in kv::")]
+    #[error("Error in kv:{}", 0)]
     Kv(kv::Error),
 }
 

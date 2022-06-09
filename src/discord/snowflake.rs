@@ -4,7 +4,7 @@ use chrono::{DateTime, TimeZone, Utc};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, Deserialize)]
-pub struct Snowflake(#[serde(deserialize_with = "serde_aux::deserialize_number_from_string")] i64);
+pub struct Snowflake(#[serde(deserialize_with = "serde_aux::prelude::deserialize_number_from_string")] i64);
 
 pub const DISCORD_EPOCH: i64 = 1420070400000;
 

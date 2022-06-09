@@ -1,8 +1,12 @@
 {
     "cSpell.words": [
         "actix",
+        "CLID",
+        "dalek",
         "dotenv",
         "repr",
-        "reqwest"
+        "reqwest",
+        "thiserror",
+        "Upsert"
     ]
 }

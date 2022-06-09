@@ -5,19 +5,19 @@ use actix_web::{HttpResponse, ResponseError};
 use log::{debug, error};
 use crate::discord::interaction::{InteractionCallback, InteractionCallbackMessage};
 
-#[derive(Debug, err_derive::Error)]
+#[derive(Debug, thiserror::Error)]
 pub enum InteractionError {
-    #[error(display = "No suitable handler found")]
+    #[error("No suitable handler found")]
     NoHandlerFound,
-    #[error(display = "Unexpected error occurred")]
+    #[error("Unexpected error occurred")]
     Unexpected,
-    #[error(display = "Command not implemented")]
+    #[error("Command not implemented")]
     CommandNotImplemented,
-    #[error(display = "Unknown command")]
+    #[error("Unknown command")]
     UnknownCommand,
-    #[error(display = "Invalid command parameters")]
+    #[error("Invalid command parameters")]
     InvalidCommand,
-    #[error(display = "Key not found")]
+    #[error("Key not found")]
     KeyNotFound,
 }
 

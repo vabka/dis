@@ -1,5 +1,4 @@
 use std::env;
-use err_derive::Error;
 use crate::Snowflake;
 
 pub struct BotConfig {
@@ -13,15 +12,15 @@ pub struct BotConfig {
     pub storage_path: String,
 }
 
-#[derive(Error, Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum ConfigLoadError {
-    #[error(display = "Invalid value for field '{}'. Expected: '{}'", field_name, expected)]
+    #[error("Invalid value for field '{}'. Expected: '{}'", field_name, expected)]
     InvalidValue {
         field_name: &'static str,
         expected: &'static str,
     },
 
-    #[error(display = "Missing required value for field '{}'", field_name)]
+    #[error("Missing required value for field '{}'", field_name)]
     MissingRequired {
         field_name: &'static str
     },
